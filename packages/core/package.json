@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Core pipeline workspace placeholder.",
+  "type": "module"
+}

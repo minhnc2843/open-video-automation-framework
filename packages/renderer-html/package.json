@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/renderer-html",
+  "version": "0.0.0",
+  "private": true,
+  "description": "HTML renderer workspace placeholder.",
+  "type": "module"
+}

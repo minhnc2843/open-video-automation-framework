@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/validator",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Script validation workspace placeholder.",
+  "type": "module"
+}

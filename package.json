@@ -1,0 +1,19 @@
+{
+  "name": "open-video-automation-framework",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Specification-first, AI-agnostic framework for deterministic vertical video automation.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "check": "node scripts/check-workspace.mjs",
+    "test": "npm run check"
+  }
+}

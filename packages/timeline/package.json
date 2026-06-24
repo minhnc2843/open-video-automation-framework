@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/timeline",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Timeline transformation workspace placeholder.",
+  "type": "module"
+}

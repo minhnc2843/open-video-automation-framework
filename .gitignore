@@ -21,6 +21,11 @@ storage/cache/
 storage/logs/
 storage/temp/
 storage/output/
+!storage/assets/.gitkeep
+!storage/cache/.gitkeep
+!storage/logs/.gitkeep
+!storage/temp/.gitkeep
+!storage/output/.gitkeep
 storage/projects/*/render/
 storage/projects/*/preview/
 storage/projects/*/cache/

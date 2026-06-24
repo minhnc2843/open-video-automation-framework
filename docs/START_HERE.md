@@ -7,11 +7,14 @@ Tài liệu này là điểm vào cho contributor hoặc AI agent mới. Sau khi
 ## Thứ tự đọc bắt buộc
 
 1. `specs/PROJECT_MEMORY.md` — quyết định dài hạn và bối cảnh thực tế.
-2. `specs/MASTER_SPEC.md` — phạm vi, nguyên tắc, contract cấp cao.
-3. `architecture/SYSTEM_ARCHITECTURE.md` — module và luồng dữ liệu.
-4. `specs/AI_RULES.md` — ràng buộc khi AI/contributor chỉnh code.
-5. `docs/ROADMAP.md` — phase hiện tại và Definition of Done.
-6. Contract, schema và ADR liên quan trực tiếp đến task.
+2. `specs/PROJECT_PRINCIPLES.md` — nguyên tắc thiết kế bắt buộc.
+3. `specs/MASTER_SPEC.md` — phạm vi, nguyên tắc, contract cấp cao.
+4. `architecture/SYSTEM_ARCHITECTURE.md` — module và luồng dữ liệu.
+5. `specs/AI_RULES.md` — ràng buộc khi AI/contributor chỉnh code.
+6. `specs/CODING_CONVENTIONS.md` — quy ước code và module boundary.
+7. `docs/ROADMAP.md` — phase hiện tại và Definition of Done.
+8. Prompt phase hiện tại trong `ai-prompts/`.
+9. Contract, schema và ADR liên quan trực tiếp đến task.
 
 ## Nếu bạn là AI Agent
 

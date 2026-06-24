@@ -60,10 +60,13 @@ JSON Script + Provider/Reference Video
 
 1. [`docs/START_HERE.md`](docs/START_HERE.md)
 2. [`specs/PROJECT_MEMORY.md`](specs/PROJECT_MEMORY.md)
-3. [`specs/MASTER_SPEC.md`](specs/MASTER_SPEC.md)
-4. [`architecture/SYSTEM_ARCHITECTURE.md`](architecture/SYSTEM_ARCHITECTURE.md)
-5. [`specs/AI_RULES.md`](specs/AI_RULES.md)
-6. [`docs/ROADMAP.md`](docs/ROADMAP.md)
+3. [`specs/PROJECT_PRINCIPLES.md`](specs/PROJECT_PRINCIPLES.md)
+4. [`specs/MASTER_SPEC.md`](specs/MASTER_SPEC.md)
+5. [`architecture/SYSTEM_ARCHITECTURE.md`](architecture/SYSTEM_ARCHITECTURE.md)
+6. [`specs/AI_RULES.md`](specs/AI_RULES.md)
+7. [`specs/CODING_CONVENTIONS.md`](specs/CODING_CONVENTIONS.md)
+8. [`docs/ROADMAP.md`](docs/ROADMAP.md)
+9. Prompt phase hiện tại trong [`ai-prompts/`](ai-prompts/)
 
 ## Cấu trúc repository mục tiêu
 
@@ -114,7 +117,18 @@ open-video-automation/
 
 ## Trạng thái hiện tại
 
-Repository hiện ở giai đoạn **Foundation / Documentation First**. Code business logic chỉ được bắt đầu sau khi các tài liệu nền và prompt theo phase được chốt.
+Repository hiện ở giai đoạn **Phase 00 — Foundation and repository governance**. Workspace skeleton và npm baseline được tạo trước; code business logic chỉ bắt đầu ở các phase sau khi contract/schema liên quan được chốt.
+
+## Kiểm tra baseline trên Windows
+
+Chạy trong PowerShell hoặc Command Prompt tại thư mục repository:
+
+```powershell
+npm install
+npm run check
+```
+
+Kết quả mong đợi: `Workspace baseline check passed.`
 
 ## Đóng góp
 

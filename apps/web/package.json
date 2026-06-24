@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "React + Vite frontend workspace placeholder for Open Video Automation Framework.",
+  "type": "module"
+}

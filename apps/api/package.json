@@ -1,0 +1,7 @@
+{
+  "name": "@ovaf/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fastify API workspace placeholder for Open Video Automation Framework.",
+  "type": "module"
+}
