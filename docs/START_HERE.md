@@ -14,7 +14,8 @@ Tài liệu này là điểm vào cho contributor hoặc AI agent mới. Sau khi
 6. `specs/CODING_CONVENTIONS.md` — quy ước code và module boundary.
 7. `docs/ROADMAP.md` — phase hiện tại và Definition of Done.
 8. Prompt phase hiện tại trong `ai-prompts/`.
-9. Contract, schema và ADR liên quan trực tiếp đến task.
+9. `specs/ERROR_CODES.md` và `specs/EVENT_STANDARD.md` nếu task chạm lỗi/event.
+10. Contract, schema và ADR liên quan trực tiếp đến task.
 
 ## Nếu bạn là AI Agent
 

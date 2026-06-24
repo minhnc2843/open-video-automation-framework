@@ -67,6 +67,7 @@ JSON Script + Provider/Reference Video
 7. [`specs/CODING_CONVENTIONS.md`](specs/CODING_CONVENTIONS.md)
 8. [`docs/ROADMAP.md`](docs/ROADMAP.md)
 9. Prompt phase hiện tại trong [`ai-prompts/`](ai-prompts/)
+10. [`specs/ERROR_CODES.md`](specs/ERROR_CODES.md) và [`specs/EVENT_STANDARD.md`](specs/EVENT_STANDARD.md) nếu task chạm lỗi/event
 
 ## Cấu trúc repository mục tiêu
 
@@ -129,6 +130,8 @@ npm run check
 ```
 
 Kết quả mong đợi: `Workspace baseline check passed.`
+
+Sau Phase 01, `npm run check` cũng chạy TypeScript build và unit tests.
 
 ## Đóng góp
 

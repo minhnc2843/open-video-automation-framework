@@ -7,6 +7,7 @@ const requiredPaths = [
   "apps/web/package.json",
   "apps/api/package.json",
   "packages/contracts/package.json",
+  "packages/contracts/src/index.ts",
   "packages/core/package.json",
   "packages/validator/package.json",
   "packages/timeline/package.json",
@@ -15,6 +16,7 @@ const requiredPaths = [
   "packages/asset-manager/package.json",
   "packages/logger/package.json",
   "packages/config/package.json",
+  "packages/config/src/index.ts",
   "contracts/README.md",
   "schemas/README.md",
   "docs/START_HERE.md",
@@ -23,7 +25,10 @@ const requiredPaths = [
   "specs/MASTER_SPEC.md",
   "specs/AI_RULES.md",
   "specs/CODING_CONVENTIONS.md",
+  "specs/ERROR_CODES.md",
+  "specs/EVENT_STANDARD.md",
   "ai-prompts/PHASE_00_FOUNDATION.md",
+  "ai-prompts/PHASE_01_CONTRACTS_CONFIG.md",
   "architecture/SYSTEM_ARCHITECTURE.md"
 ];
 

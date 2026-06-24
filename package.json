@@ -13,7 +13,14 @@
     "packages/*"
   ],
   "scripts": {
-    "check": "node scripts/check-workspace.mjs",
-    "test": "npm run check"
+    "check": "npm run check:workspace && npm run typecheck && npm test",
+    "check:workspace": "node scripts/check-workspace.mjs",
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
   }
 }
