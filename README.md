@@ -118,7 +118,7 @@ open-video-automation/
 
 ## Trạng thái hiện tại
 
-Repository hiện ở giai đoạn **Phase 00 — Foundation and repository governance**. Workspace skeleton và npm baseline được tạo trước; code business logic chỉ bắt đầu ở các phase sau khi contract/schema liên quan được chốt.
+Repository hiện đã hoàn thành baseline từ **Phase 00** đến **Phase 10**. Các module chính hiện có: contracts/config, SQLite persistence, JSON Script validator, timeline engine, asset/cache primitives, job worker/logger, HTML scene renderer, FFmpeg encoder adapter, Fastify API và React/Vite Web UI baseline.
 
 ## Kiểm tra baseline trên Windows
 
@@ -154,6 +154,14 @@ Sau Phase 07, HTML scene renderer foundation nằm trong [`packages/renderer-htm
 Sau Phase 08, FFmpeg encoder adapter nằm trong [`packages/encoder-ffmpeg`](packages/encoder-ffmpeg): command builder, scene concat manifest, audio mix switches và FFprobe MP4 metadata validation.
 
 Sau Phase 09, Fastify API boundary nằm trong [`apps/api`](apps/api): project metadata, script validation, render job metadata và job log routes.
+
+Sau Phase 10, Web UI baseline nằm trong [`apps/web`](apps/web): project dashboard, JSON Script editor, validation report, render job status và log viewer. Chạy local UI bằng:
+
+```powershell
+npm run dev --workspace @ovaf/web
+```
+
+Mặc định UI gọi API tại `http://localhost:3000`; có thể đổi bằng `VITE_API_BASE_URL` hoặc trường API base URL trong giao diện.
 
 ## Đóng góp
 

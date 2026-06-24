@@ -2,6 +2,27 @@
   "name": "@ovaf/web",
   "version": "0.0.0",
   "private": true,
-  "description": "React + Vite frontend workspace placeholder for Open Video Automation Framework.",
-  "type": "module"
+  "description": "React + Vite frontend for Open Video Automation Framework.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b && vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@ovaf/contracts": "0.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^3.4.17",
+    "vite": "^7.0.0"
+  }
 }

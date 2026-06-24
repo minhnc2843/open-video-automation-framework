@@ -121,6 +121,13 @@ Deliverables:
 - Validation and logs display.
 - Render job progress.
 
+Definition of Done:
+
+- React + Vite app builds through npm workspace scripts.
+- UI calls typed API client instead of embedding route logic in React components.
+- React components remain presentation-focused; workflow orchestration sits in a hook/state module.
+- Validation, project version save, job metadata queueing, status refresh and log loading are reachable from the first screen.
+
 ## Phase 11 — Provider plugin infrastructure
 
 Deliverables:

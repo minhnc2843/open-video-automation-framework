@@ -5,6 +5,11 @@ const root = process.cwd();
 
 const requiredPaths = [
   "apps/web/package.json",
+  "apps/web/index.html",
+  "apps/web/src/main.tsx",
+  "apps/web/src/App.tsx",
+  "apps/web/src/api/client.ts",
+  "apps/web/src/state/useVideoAutomationWorkspace.ts",
   "apps/api/package.json",
   "apps/api/src/index.ts",
   "packages/contracts/package.json",
@@ -50,6 +55,7 @@ const requiredPaths = [
   "ai-prompts/PHASE_07_HTML_SCENE_RENDERER.md",
   "ai-prompts/PHASE_08_FFMPEG_ENCODER.md",
   "ai-prompts/PHASE_09_API_LAYER.md",
+  "ai-prompts/PHASE_10_WEB_UI_BASELINE.md",
   "adr/ADR-005-FFMPEG-ENCODER-ADAPTER-PACKAGE.md",
   "adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md",
   "architecture/SYSTEM_ARCHITECTURE.md"
