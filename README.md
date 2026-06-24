@@ -145,6 +145,12 @@ Sau Phase 03, JSON Script schema nằm ở [`schemas/json-script.schema.json`](s
 
 Sau Phase 04, Timeline engine nằm trong [`packages/timeline`](packages/timeline). Module này chỉ nhận Script đã valid và sinh Timeline chuẩn hóa; renderer/provider vẫn chưa được triển khai.
 
+Sau Phase 05, asset/cache primitives nằm trong [`packages/asset-manager`](packages/asset-manager): hashing, asset record, storage path, cache metadata validation và scene input fingerprint.
+
+Sau Phase 06, job state machine nằm trong [`packages/core`](packages/core), structured JSONL logger trong [`packages/logger`](packages/logger), và persistence hỗ trợ cập nhật trạng thái render job.
+
+Sau Phase 07, HTML scene renderer foundation nằm trong [`packages/renderer-html`](packages/renderer-html): scene HTML document, preview file, Playwright capture boundary và scene cache integration.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.

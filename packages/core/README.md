@@ -1,5 +1,16 @@
 # Core Package
 
-Phase 00 placeholder for the core pipeline.
+Core pipeline primitives for Phase 06.
 
-Core must depend on contracts, not concrete provider, renderer, API or UI implementations.
+Current responsibilities:
+
+- persisted job state transition rules;
+- single-worker execution skeleton using injected stage handlers;
+- retry/recoverable policy skeleton.
+
+Out of scope:
+
+- concrete validator/timeline/renderer orchestration;
+- provider implementation;
+- API/UI dependencies;
+- SQLite-specific code.

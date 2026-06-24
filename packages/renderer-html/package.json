@@ -3,5 +3,24 @@
   "version": "0.0.0",
   "private": true,
   "description": "HTML renderer workspace placeholder.",
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ovaf/asset-manager": "0.0.0",
+    "@ovaf/contracts": "0.0.0",
+    "playwright-core": "^1.57.0"
+  }
 }

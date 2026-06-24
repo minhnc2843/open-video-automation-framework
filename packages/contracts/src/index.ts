@@ -4,3 +4,7 @@ export * from "./events.js";
 export * from "./persistence.js";
 export * from "./script.js";
 export * from "./timeline.js";
+export * from "./assets.js";
+export * from "./logs.js";
+export * from "./jobs.js";
+export * from "./renderer.js";

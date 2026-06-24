@@ -10,6 +10,9 @@ Included now:
 - persistence records for workspace, project, immutable project version and render job metadata.
 - JSON Script TypeScript types that mirror the schema source of truth.
 - Timeline contracts consumed by renderer-facing packages.
+- asset and cache metadata contracts.
+- structured log records and job state transition contracts.
+- HTML renderer input/output contracts.
 
 Not included yet:
 

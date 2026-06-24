@@ -12,6 +12,18 @@
     },
     {
       "path": "./packages/validator"
+    },
+    {
+      "path": "./packages/asset-manager"
+    },
+    {
+      "path": "./packages/logger"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/renderer-html"
     }
   ]
 }

@@ -6,6 +6,7 @@ import type {
   CreateProjectVersionInput,
   CreateRenderJobInput,
   CreateWorkspaceInput,
+  JobStatus,
   JsonObject,
   ProjectRecord,
   ProjectVersionRecord,
@@ -201,6 +202,41 @@ export class SqliteProjectRepository {
   getRenderJob(id: string): RenderJobRecord | null {
     const row = this.database.prepare("SELECT * FROM render_jobs WHERE id = ?").get(id) as RenderJobRow | undefined;
     return row === undefined ? null : mapRenderJob(row);
+  }
+
+  updateRenderJobStatus(
+    id: string,
+    status: JobStatus,
+    now: Date = new Date(),
+    options: {
+      readonly incrementRetryCount?: boolean;
+      readonly startedAt?: string | null;
+      readonly finishedAt?: string | null;
+    } = {}
+  ): RenderJobRecord {
+    const current = this.getRenderJob(id);
+    if (current === null) {
+      throw new Error(`JOB-STATE-002: render job was not found: ${id}`);
+    }
+
+    const updatedAt = now.toISOString();
+    const startedAt = options.startedAt === undefined ? current.startedAt : options.startedAt;
+    const finishedAt = options.finishedAt === undefined ? current.finishedAt : options.finishedAt;
+    const retryCount = current.retryCount + (options.incrementRetryCount === true ? 1 : 0);
+
+    this.database
+      .prepare(
+        `UPDATE render_jobs
+          SET status = ?,
+              retry_count = ?,
+              updated_at = ?,
+              started_at = ?,
+              finished_at = ?
+          WHERE id = ?`
+      )
+      .run(status, retryCount, updatedAt, startedAt, finishedAt, id);
+
+    return this.getRenderJob(id) ?? fail(`Render job was not updated: ${id}`);
   }
 
   private getNextProjectVersionNumber(projectId: string): number {

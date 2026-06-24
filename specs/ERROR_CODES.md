@@ -29,6 +29,15 @@ DOMAIN-AREA-NNN
 | `TIMELINE-TIME-001` | validation | error | Timeline scenes overlap. |
 | `TIMELINE-TIME-002` | validation | error | Timeline scene or total duration overflows configured duration. |
 | `TIMELINE-TIME-003` | validation | error | Timeline scene has invalid timing or frame boundaries. |
+| `ASSET-HASH-001` | storage | error | Asset hashing failed or could not read the asset file. |
+| `ASSET-PATH-001` | storage | error | Asset storage path could not be derived safely. |
+| `CACHE-VALIDATION-001` | storage | warning | Cache entry is missing, stale or invalid. |
+| `JOB-STATE-001` | pipeline | error | Job state transition is not allowed. |
+| `JOB-STATE-002` | pipeline | error | Job was not found or cannot be claimed by the worker. |
+| `LOGGER-REDACTION-001` | storage | warning | Logger redacted sensitive fields from structured details. |
+| `RENDERER-HTML-001` | renderer | error | HTML scene document generation failed. |
+| `RENDERER-CAPTURE-001` | renderer | error | Playwright Chromium scene capture failed. |
+| `RENDERER-CACHE-001` | renderer | warning | Scene render cache was missing or invalid and had to be regenerated. |
 
 ## Rules
 

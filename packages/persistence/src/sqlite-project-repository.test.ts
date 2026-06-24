@@ -123,4 +123,38 @@ describe("SqliteProjectRepository", () => {
         .run(JSON.stringify({ version: "2.0" }), "version-1")
     ).toThrow(/immutable/);
   });
+
+  it("updates render job status, retry count and timestamps", () => {
+    repository.createWorkspace({ id: "workspace-1", name: "Default Workspace" });
+    repository.createProject({
+      id: "project-1",
+      workspaceId: "workspace-1",
+      name: "Example video",
+      language: "vi"
+    });
+    const version = repository.createProjectVersion({
+      id: "version-1",
+      projectId: "project-1",
+      scriptSnapshot: { version: "1.0" },
+      settingsSnapshot: { width: 1080 }
+    });
+    repository.createRenderJob({
+      id: "job-1",
+      projectId: "project-1",
+      projectVersionId: version.id,
+      configSnapshot: {}
+    });
+
+    const updated = repository.updateRenderJobStatus("job-1", "recoverable", new Date("2026-06-24T01:00:00.000Z"), {
+      incrementRetryCount: true,
+      startedAt: "2026-06-24T00:00:00.000Z"
+    });
+
+    expect(updated).toMatchObject({
+      status: "recoverable",
+      retryCount: 1,
+      updatedAt: "2026-06-24T01:00:00.000Z",
+      startedAt: "2026-06-24T00:00:00.000Z"
+    });
+  });
 });
