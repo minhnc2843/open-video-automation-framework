@@ -6,6 +6,12 @@
     },
     {
       "path": "./packages/config"
+    },
+    {
+      "path": "./packages/persistence"
+    },
+    {
+      "path": "./packages/validator"
     }
   ]
 }

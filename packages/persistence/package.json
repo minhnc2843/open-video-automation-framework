@@ -1,8 +1,8 @@
 {
-  "name": "@ovaf/validator",
+  "name": "@ovaf/persistence",
   "version": "0.0.0",
   "private": true,
-  "description": "Script validation workspace placeholder.",
+  "description": "SQLite persistence adapter for project metadata.",
   "type": "module",
   "exports": {
     ".": {
@@ -19,7 +19,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ovaf/contracts": "0.0.0",
-    "ajv": "^8.17.0"
+    "@ovaf/config": "0.0.0",
+    "@ovaf/contracts": "0.0.0"
   }
 }

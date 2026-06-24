@@ -133,6 +133,16 @@ Kết quả mong đợi: `Workspace baseline check passed.`
 
 Sau Phase 01, `npm run check` cũng chạy TypeScript build và unit tests.
 
+Sau Phase 02, có thể tạo/cập nhật SQLite database cục bộ:
+
+```powershell
+npm run db:migrate
+```
+
+Mặc định database nằm ở `storage/projects/project-store.sqlite`, hoặc dùng `APP_DATABASE_PATH` để trỏ sang file khác.
+
+Sau Phase 03, JSON Script schema nằm ở [`schemas/json-script.schema.json`](schemas/json-script.schema.json), còn validator implementation nằm trong [`packages/validator`](packages/validator).
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.

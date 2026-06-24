@@ -10,6 +10,7 @@ describe("loadRuntimeConfig", () => {
       port: 3000,
       logLevel: "info",
       storageRoot: "storage",
+      databasePath: "storage/projects/project-store.sqlite",
       encryptionKeyConfigured: false
     });
     expect(config.storagePaths.output).toBe("storage/output");

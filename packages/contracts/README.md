@@ -7,6 +7,7 @@ Included now:
 - runtime constants for fixed V1 constraints;
 - error descriptor skeleton;
 - job status, pipeline stage and domain event skeleton.
+- persistence records for workspace, project, immutable project version and render job metadata.
 
 Not included yet:
 

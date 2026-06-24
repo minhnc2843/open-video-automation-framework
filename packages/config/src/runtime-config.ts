@@ -10,6 +10,7 @@ const environmentSchema = z
     APP_PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     APP_LOG_LEVEL: logLevelSchema.default("info"),
     APP_STORAGE_ROOT: z.string().trim().min(1).default("storage"),
+    APP_DATABASE_PATH: z.string().trim().min(1).optional(),
     APP_ENCRYPTION_KEY: z.string().trim().min(32).optional()
   })
   .superRefine((value, context) => {
@@ -30,6 +31,7 @@ export interface RuntimeConfig {
   readonly port: number;
   readonly logLevel: LogLevel;
   readonly storageRoot: string;
+  readonly databasePath: string;
   readonly storagePaths: RuntimeStoragePaths;
   readonly encryptionKeyConfigured: boolean;
 }
@@ -72,12 +74,14 @@ export function loadRuntimeConfig(environment: EnvironmentInput): RuntimeConfig 
   }
 
   const storageRoot = result.data.APP_STORAGE_ROOT;
+  const databasePath = result.data.APP_DATABASE_PATH ?? `${storageRoot}/projects/project-store.sqlite`;
 
   return {
     environment: result.data.APP_ENV,
     port: result.data.APP_PORT,
     logLevel: result.data.APP_LOG_LEVEL,
     storageRoot,
+    databasePath,
     storagePaths: {
       projects: `${storageRoot}/projects`,
       assets: `${storageRoot}/assets`,

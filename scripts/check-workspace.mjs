@@ -10,6 +10,8 @@ const requiredPaths = [
   "packages/contracts/src/index.ts",
   "packages/core/package.json",
   "packages/validator/package.json",
+  "packages/validator/src/index.ts",
+  "schemas/json-script.schema.json",
   "packages/timeline/package.json",
   "packages/providers/package.json",
   "packages/renderer-html/package.json",
@@ -17,6 +19,9 @@ const requiredPaths = [
   "packages/logger/package.json",
   "packages/config/package.json",
   "packages/config/src/index.ts",
+  "packages/persistence/package.json",
+  "packages/persistence/src/index.ts",
+  "packages/persistence/src/migrations.ts",
   "contracts/README.md",
   "schemas/README.md",
   "docs/START_HERE.md",
@@ -29,6 +34,9 @@ const requiredPaths = [
   "specs/EVENT_STANDARD.md",
   "ai-prompts/PHASE_00_FOUNDATION.md",
   "ai-prompts/PHASE_01_CONTRACTS_CONFIG.md",
+  "ai-prompts/PHASE_02_PERSISTENCE.md",
+  "ai-prompts/PHASE_03_SCRIPT_VALIDATOR.md",
+  "adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md",
   "architecture/SYSTEM_ARCHITECTURE.md"
 ];
 

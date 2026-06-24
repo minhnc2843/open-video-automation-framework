@@ -29,6 +29,8 @@ Không bắt đầu code chỉ từ yêu cầu ngắn. Trước khi sửa file, 
 
 Nếu task yêu cầu thay public contract, JSON schema hoặc database schema nhưng chưa có quyết định rõ ràng, dừng ở mức proposal; không tự ý thay đổi.
 
+Phase 02 đã có ADR riêng cho persistence adapter: `adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md`.
+
 ## Nếu bạn là contributor
 
 Hãy bắt đầu bằng một issue hoặc ADR nếu thay đổi vượt ra ngoài bug fix nhỏ. Tất cả code mới cần có validation, structured log, error mapping và test phù hợp.

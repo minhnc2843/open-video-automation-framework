@@ -27,6 +27,9 @@ storage/output/
 !storage/logs/.gitkeep
 !storage/temp/.gitkeep
 !storage/output/.gitkeep
+storage/projects/*.db
+storage/projects/*.sqlite
+storage/projects/*.sqlite-*
 storage/projects/*/render/
 storage/projects/*/preview/
 storage/projects/*/cache/

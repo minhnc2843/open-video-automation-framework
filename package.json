@@ -15,6 +15,7 @@
   "scripts": {
     "check": "npm run check:workspace && npm run typecheck && npm test",
     "check:workspace": "node scripts/check-workspace.mjs",
+    "db:migrate": "node packages/persistence/dist/cli/migrate.js",
     "typecheck": "tsc -b",
     "test": "vitest run"
   },
