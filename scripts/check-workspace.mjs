@@ -13,6 +13,7 @@ const requiredPaths = [
   "packages/validator/src/index.ts",
   "schemas/json-script.schema.json",
   "packages/timeline/package.json",
+  "packages/timeline/src/index.ts",
   "packages/providers/package.json",
   "packages/renderer-html/package.json",
   "packages/asset-manager/package.json",
@@ -36,6 +37,7 @@ const requiredPaths = [
   "ai-prompts/PHASE_01_CONTRACTS_CONFIG.md",
   "ai-prompts/PHASE_02_PERSISTENCE.md",
   "ai-prompts/PHASE_03_SCRIPT_VALIDATOR.md",
+  "ai-prompts/PHASE_04_TIMELINE_ENGINE.md",
   "adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md",
   "architecture/SYSTEM_ARCHITECTURE.md"
 ];

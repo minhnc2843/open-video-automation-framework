@@ -1,4 +1,5 @@
-import type { JobStatus, ProjectLanguage } from "./index.js";
+import type { JobStatus } from "./events.js";
+import type { ProjectLanguage } from "./runtime.js";
 
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];

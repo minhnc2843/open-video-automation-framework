@@ -3,5 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "description": "Timeline transformation workspace placeholder.",
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ovaf/contracts": "0.0.0"
+  }
 }

@@ -143,6 +143,8 @@ Mặc định database nằm ở `storage/projects/project-store.sqlite`, hoặc
 
 Sau Phase 03, JSON Script schema nằm ở [`schemas/json-script.schema.json`](schemas/json-script.schema.json), còn validator implementation nằm trong [`packages/validator`](packages/validator).
 
+Sau Phase 04, Timeline engine nằm trong [`packages/timeline`](packages/timeline). Module này chỉ nhận Script đã valid và sinh Timeline chuẩn hóa; renderer/provider vẫn chưa được triển khai.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.
