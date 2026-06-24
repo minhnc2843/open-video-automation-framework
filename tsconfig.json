@@ -24,6 +24,9 @@
     },
     {
       "path": "./packages/renderer-html"
+    },
+    {
+      "path": "./packages/encoder-ffmpeg"
     }
   ]
 }

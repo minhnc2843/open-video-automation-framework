@@ -151,6 +151,8 @@ Sau Phase 06, job state machine nằm trong [`packages/core`](packages/core), st
 
 Sau Phase 07, HTML scene renderer foundation nằm trong [`packages/renderer-html`](packages/renderer-html): scene HTML document, preview file, Playwright capture boundary và scene cache integration.
 
+Sau Phase 08, FFmpeg encoder adapter nằm trong [`packages/encoder-ffmpeg`](packages/encoder-ffmpeg): command builder, scene concat manifest, audio mix switches và FFprobe MP4 metadata validation.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.

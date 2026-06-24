@@ -38,6 +38,9 @@ DOMAIN-AREA-NNN
 | `RENDERER-HTML-001` | renderer | error | HTML scene document generation failed. |
 | `RENDERER-CAPTURE-001` | renderer | error | Playwright Chromium scene capture failed. |
 | `RENDERER-CACHE-001` | renderer | warning | Scene render cache was missing or invalid and had to be regenerated. |
+| `ENCODER-FFMPEG-001` | renderer | error | FFmpeg command construction or execution failed. |
+| `ENCODER-AUDIO-001` | renderer | error | Audio mix inputs are invalid. |
+| `OUTPUT-VALIDATION-001` | renderer | error | Encoded MP4 metadata does not match V1 output constraints. |
 
 ## Rules
 

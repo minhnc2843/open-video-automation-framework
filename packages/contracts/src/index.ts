@@ -8,3 +8,4 @@ export * from "./assets.js";
 export * from "./logs.js";
 export * from "./jobs.js";
 export * from "./renderer.js";
+export * from "./encoder.js";

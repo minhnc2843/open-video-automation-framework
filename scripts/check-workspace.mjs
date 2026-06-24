@@ -18,6 +18,8 @@ const requiredPaths = [
   "packages/providers/package.json",
   "packages/renderer-html/package.json",
   "packages/renderer-html/src/index.ts",
+  "packages/encoder-ffmpeg/package.json",
+  "packages/encoder-ffmpeg/src/index.ts",
   "packages/asset-manager/package.json",
   "packages/asset-manager/src/index.ts",
   "packages/logger/package.json",
@@ -45,6 +47,8 @@ const requiredPaths = [
   "ai-prompts/PHASE_05_ASSET_MANAGER_CACHE.md",
   "ai-prompts/PHASE_06_JOB_WORKER_LOGGER.md",
   "ai-prompts/PHASE_07_HTML_SCENE_RENDERER.md",
+  "ai-prompts/PHASE_08_FFMPEG_ENCODER.md",
+  "adr/ADR-005-FFMPEG-ENCODER-ADAPTER-PACKAGE.md",
   "adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md",
   "architecture/SYSTEM_ARCHITECTURE.md"
 ];

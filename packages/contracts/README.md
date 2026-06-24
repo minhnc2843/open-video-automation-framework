@@ -13,6 +13,7 @@ Included now:
 - asset and cache metadata contracts.
 - structured log records and job state transition contracts.
 - HTML renderer input/output contracts.
+- FFmpeg encoder and MP4 validation contracts.
 
 Not included yet:
 
