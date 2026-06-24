@@ -41,6 +41,9 @@ DOMAIN-AREA-NNN
 | `ENCODER-FFMPEG-001` | renderer | error | FFmpeg command construction or execution failed. |
 | `ENCODER-AUDIO-001` | renderer | error | Audio mix inputs are invalid. |
 | `OUTPUT-VALIDATION-001` | renderer | error | Encoded MP4 metadata does not match V1 output constraints. |
+| `API-REQUEST-001` | validation | error | API request body or route parameter is invalid. |
+| `API-NOTFOUND-001` | validation | error | Requested API resource was not found. |
+| `API-LOG-001` | storage | error | API could not read requested job logs. |
 
 ## Rules
 

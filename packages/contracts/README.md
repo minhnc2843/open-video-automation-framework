@@ -14,6 +14,7 @@ Included now:
 - structured log records and job state transition contracts.
 - HTML renderer input/output contracts.
 - FFmpeg encoder and MP4 validation contracts.
+- API request/response contracts for Phase 09 routes.
 
 Not included yet:
 

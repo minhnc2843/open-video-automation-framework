@@ -6,6 +6,7 @@ const root = process.cwd();
 const requiredPaths = [
   "apps/web/package.json",
   "apps/api/package.json",
+  "apps/api/src/index.ts",
   "packages/contracts/package.json",
   "packages/contracts/src/index.ts",
   "packages/core/package.json",
@@ -48,6 +49,7 @@ const requiredPaths = [
   "ai-prompts/PHASE_06_JOB_WORKER_LOGGER.md",
   "ai-prompts/PHASE_07_HTML_SCENE_RENDERER.md",
   "ai-prompts/PHASE_08_FFMPEG_ENCODER.md",
+  "ai-prompts/PHASE_09_API_LAYER.md",
   "adr/ADR-005-FFMPEG-ENCODER-ADAPTER-PACKAGE.md",
   "adr/ADR-004-PERSISTENCE-ADAPTER-PACKAGE.md",
   "architecture/SYSTEM_ARCHITECTURE.md"

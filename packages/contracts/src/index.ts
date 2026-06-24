@@ -9,3 +9,4 @@ export * from "./logs.js";
 export * from "./jobs.js";
 export * from "./renderer.js";
 export * from "./encoder.js";
+export * from "./api.js";

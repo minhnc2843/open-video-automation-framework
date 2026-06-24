@@ -153,6 +153,8 @@ Sau Phase 07, HTML scene renderer foundation nằm trong [`packages/renderer-htm
 
 Sau Phase 08, FFmpeg encoder adapter nằm trong [`packages/encoder-ffmpeg`](packages/encoder-ffmpeg): command builder, scene concat manifest, audio mix switches và FFprobe MP4 metadata validation.
 
+Sau Phase 09, Fastify API boundary nằm trong [`apps/api`](apps/api): project metadata, script validation, render job metadata và job log routes.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.

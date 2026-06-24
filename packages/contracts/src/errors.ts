@@ -23,7 +23,10 @@ export const FRAMEWORK_ERROR_CODES = [
   "RENDERER-CACHE-001",
   "ENCODER-FFMPEG-001",
   "ENCODER-AUDIO-001",
-  "OUTPUT-VALIDATION-001"
+  "OUTPUT-VALIDATION-001",
+  "API-REQUEST-001",
+  "API-NOTFOUND-001",
+  "API-LOG-001"
 ] as const;
 
 export type FrameworkErrorCode = (typeof FRAMEWORK_ERROR_CODES)[number];
