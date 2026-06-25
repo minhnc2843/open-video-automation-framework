@@ -174,6 +174,8 @@ Sau Phase 13, reference video Style Profile nằm trong [`packages/reference-vid
 
 Sau Phase 14, Google Colab operations nằm trong [`packages/colab`](packages/colab), [`colab/setup_colab.py`](colab/setup_colab.py) và [`docs/COLAB_OPERATIONS.md`](docs/COLAB_OPERATIONS.md): environment checks, sync manifest contract, storage layout và resume planning cho Colab session tạm thời.
 
+Hướng dẫn cài đặt và sử dụng trên Google Colab nằm ở [`colab/README.md`](colab/README.md).
+
 Sau Phase 15, nghiệm thu dự án nằm trong [`tests/integration`](tests/integration), [`examples/basic-vertical-short.json`](examples/basic-vertical-short.json), [`scripts/benchmark-render.mjs`](scripts/benchmark-render.mjs), [`CONTRIBUTING.md`](CONTRIBUTING.md) và [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md). Chạy full acceptance bằng:
 
 ```powershell
