@@ -1,9 +1,11 @@
+import type { ReactElement } from "react";
+
 export interface StatusBannerProps {
   readonly error: string | null;
   readonly statusMessage: string;
 }
 
-export function StatusBanner(props: StatusBannerProps): JSX.Element {
+export function StatusBanner(props: StatusBannerProps): ReactElement {
   if (props.error !== null) {
     return (
       <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-950" role="alert">

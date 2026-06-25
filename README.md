@@ -163,6 +163,10 @@ npm run dev --workspace @ovaf/web
 
 Mặc định UI gọi API tại `http://localhost:3000`; có thể đổi bằng `VITE_API_BASE_URL` hoặc trường API base URL trong giao diện.
 
+Sau Phase 11, provider plugin infrastructure nằm trong [`packages/providers`](packages/providers): provider contract, registry, credential encryption vault, health/generation runner và normalized provider errors. Phase này chưa thêm provider cụ thể như Gemini, OpenAI hoặc ElevenLabs.
+
+Sau Phase 12, media adapters nằm trong [`packages/media`](packages/media): voice synthesis request plan, subtitle SRT document builder, music track plan, timed audio tracks và deterministic media cache keys. FFmpeg encoder đã hiểu optional audio timing fields để mix voice/music đúng vị trí.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.

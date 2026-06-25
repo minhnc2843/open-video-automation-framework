@@ -1,10 +1,11 @@
+import type { ReactElement } from "react";
 import type { ValidationSummary } from "../state/useVideoAutomationWorkspace";
 
 export interface ValidationPanelProps {
   readonly validation: ValidationSummary | null;
 }
 
-export function ValidationPanel(props: ValidationPanelProps): JSX.Element {
+export function ValidationPanel(props: ValidationPanelProps): ReactElement {
   if (props.validation === null) {
     return (
       <section className="rounded-lg border border-neutral-300 bg-white p-4">

@@ -1,8 +1,8 @@
 {
-  "name": "@ovaf/providers",
+  "name": "@ovaf/media",
   "version": "0.0.0",
   "private": true,
-  "description": "Provider plugin registry and credential boundary for Open Video Automation Framework.",
+  "description": "Voice, subtitle and music adapter primitives for Open Video Automation Framework.",
   "type": "module",
   "exports": {
     ".": {
@@ -19,6 +19,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ovaf/asset-manager": "0.0.0",
     "@ovaf/contracts": "0.0.0"
   }
 }

@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import type { ProjectRecord, ProjectVersionRecord } from "@ovaf/contracts";
 import type { ValidationSummary, WorkspaceAction } from "../state/useVideoAutomationWorkspace";
 
@@ -13,7 +14,7 @@ export interface ScriptPanelProps {
   readonly onValidateScript: () => void;
 }
 
-export function ScriptPanel(props: ScriptPanelProps): JSX.Element {
+export function ScriptPanel(props: ScriptPanelProps): ReactElement {
   const isBusy = props.busyAction !== null;
   const canUseProject = props.selectedProject !== null;
   const validationLabel =

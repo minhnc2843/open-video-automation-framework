@@ -5,7 +5,7 @@ FFmpeg encoder adapter for Phase 08.
 Current responsibilities:
 
 - build FFmpeg commands for image sequence or video file input;
-- add audio switches for no-audio, one-audio-track and multi-track `amix`;
+- add audio switches for no-audio, one-audio-track, timed tracks and multi-track `amix`;
 - write concat demuxer manifests for scene videos;
 - run external process commands through an injectable runner boundary;
 - validate MP4 metadata from FFprobe JSON.

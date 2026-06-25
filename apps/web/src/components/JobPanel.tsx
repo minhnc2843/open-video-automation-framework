@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import type { JobStatus, RenderJobRecord } from "@ovaf/contracts";
 import type { WorkspaceAction } from "../state/useVideoAutomationWorkspace";
 
@@ -19,7 +20,7 @@ export interface JobPanelProps {
   readonly onRefreshJob: () => void;
 }
 
-export function JobPanel(props: JobPanelProps): JSX.Element {
+export function JobPanel(props: JobPanelProps): ReactElement {
   return (
     <section className="rounded-lg border border-neutral-300 bg-white p-4">
       <div className="flex items-start justify-between gap-3">

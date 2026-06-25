@@ -20,6 +20,15 @@
       "path": "./packages/validator"
     },
     {
+      "path": "./packages/timeline"
+    },
+    {
+      "path": "./packages/providers"
+    },
+    {
+      "path": "./packages/media"
+    },
+    {
       "path": "./packages/asset-manager"
     },
     {

@@ -20,6 +20,9 @@ export interface AudioTrackInput {
   readonly id: string;
   readonly path: string;
   readonly volume?: number;
+  readonly startSeconds?: number;
+  readonly durationSeconds?: number;
+  readonly loop?: boolean;
 }
 
 export interface EncodeMp4Input {

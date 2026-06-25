@@ -137,6 +137,14 @@ Deliverables:
 - Credentials encryption.
 - Health checks, normalized errors.
 
+Definition of Done:
+
+- `@ovaf/contracts` exposes provider metadata, capability, health, generation, cancellation and normalized error contracts.
+- `@ovaf/providers` registers plugins without concrete provider SDK coupling.
+- Provider credentials can be encrypted and decrypted through a single vault boundary.
+- Provider health/generation/cancellation calls return normalized operation results.
+- Tests prove registry behavior, encryption behavior and secret redaction.
+
 ## Phase 12 — Voice, subtitle and music adapters
 
 Deliverables:
@@ -144,6 +152,15 @@ Deliverables:
 - Optional audio pipeline.
 - Voice/subtitle/music feature toggles.
 - Caching and timing synchronization.
+
+Definition of Done:
+
+- `@ovaf/contracts` exposes media planning contracts and timed audio track inputs.
+- `@ovaf/media` builds voice synthesis requests, subtitle documents, music plans and combined media plans from Timeline input.
+- Voice, subtitle and music can be independently disabled through existing settings.
+- Music-enabled plans fail clearly when no music source is provided.
+- Generated voice assets and music tracks become timed encoder audio tracks.
+- FFmpeg command builder supports optional audio track offset, duration and loop fields.
 
 ## Phase 13 — Reference video style profile
 

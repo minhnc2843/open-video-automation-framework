@@ -9,7 +9,7 @@ describe("web API client", () => {
   });
 
   it("posts typed JSON payloads to the API", async () => {
-    const calls: { readonly input: string; readonly init?: RequestInit }[] = [];
+    const calls: { readonly input: string; readonly init: RequestInit | undefined }[] = [];
     const fetcher: ApiFetch = async (input, init) => {
       calls.push({ input, init });
       return {

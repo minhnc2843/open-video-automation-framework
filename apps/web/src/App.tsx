@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
 import type { ProjectLanguage } from "@ovaf/contracts";
 import { JobPanel } from "./components/JobPanel";
 import { ProjectPanel } from "./components/ProjectPanel";
@@ -7,7 +7,7 @@ import { StatusBanner } from "./components/StatusBanner";
 import { ValidationPanel } from "./components/ValidationPanel";
 import { useVideoAutomationWorkspace } from "./state/useVideoAutomationWorkspace";
 
-export function App(): JSX.Element {
+export function App(): ReactElement {
   const workspace = useVideoAutomationWorkspace();
   const [openProjectId, setOpenProjectId] = useState("");
   const [projectLanguage, setProjectLanguage] = useState<ProjectLanguage>("vi");

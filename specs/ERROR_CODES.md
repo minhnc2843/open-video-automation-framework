@@ -41,6 +41,16 @@ DOMAIN-AREA-NNN
 | `ENCODER-FFMPEG-001` | renderer | error | FFmpeg command construction or execution failed. |
 | `ENCODER-AUDIO-001` | renderer | error | Audio mix inputs are invalid. |
 | `OUTPUT-VALIDATION-001` | renderer | error | Encoded MP4 metadata does not match V1 output constraints. |
+| `PROVIDER-REGISTRY-001` | provider | error | Provider plugin registration or lookup failed. |
+| `PROVIDER-CREDENTIALS-001` | provider | error | Provider credentials are missing, invalid or cannot be decrypted. |
+| `PROVIDER-HEALTH-001` | provider | error | Provider health check failed or returned an unusable status. |
+| `PROVIDER-CALL-001` | provider | error | Provider generation call failed or is unsupported. |
+| `PROVIDER-CANCEL-001` | provider | warning | Provider cancellation failed or is unsupported. |
+| `MEDIA-VOICE-001` | pipeline | error | Voice generation plan is missing required cue text or generated asset metadata. |
+| `MEDIA-SUBTITLE-001` | pipeline | error | Subtitle document build failed or subtitle cues are missing. |
+| `MEDIA-MUSIC-001` | pipeline | error | Music is enabled but no usable music source was provided. |
+| `MEDIA-TIMING-001` | pipeline | error | Voice, subtitle or music timing cannot be synchronized with the Timeline. |
+| `MEDIA-CACHE-001` | storage | warning | Voice, subtitle or music cache key could not be derived or validated. |
 | `API-REQUEST-001` | validation | error | API request body or route parameter is invalid. |
 | `API-NOTFOUND-001` | validation | error | Requested API resource was not found. |
 | `API-LOG-001` | storage | error | API could not read requested job logs. |

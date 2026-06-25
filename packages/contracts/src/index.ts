@@ -9,4 +9,6 @@ export * from "./logs.js";
 export * from "./jobs.js";
 export * from "./renderer.js";
 export * from "./encoder.js";
+export * from "./providers.js";
+export * from "./media.js";
 export * from "./api.js";

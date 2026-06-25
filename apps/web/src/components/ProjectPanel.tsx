@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import type { ProjectLanguage } from "@ovaf/contracts";
 import type { RecentProject, WorkspaceAction } from "../state/useVideoAutomationWorkspace";
 
@@ -20,7 +21,7 @@ export interface ProjectPanelProps {
   readonly onProjectNameChange: (projectName: string) => void;
 }
 
-export function ProjectPanel(props: ProjectPanelProps): JSX.Element {
+export function ProjectPanel(props: ProjectPanelProps): ReactElement {
   const isCreating = props.busyAction === "create-project";
   const isOpening = props.busyAction === "open-project";
 

@@ -96,6 +96,42 @@ describe("buildEncodeMp4Command", () => {
     expect(command.args).toContain("[aout]");
   });
 
+  it("builds timed audio filter switches", () => {
+    const command = buildEncodeMp4Command({
+      videoInput: {
+        kind: "video_file",
+        inputPath: "scene.mp4"
+      },
+      outputPath: "output/video.mp4",
+      width: 1080,
+      height: 1920,
+      fps: 30,
+      durationSeconds: 10,
+      audioTracks: [
+        {
+          id: "voice-scene-2",
+          path: "voice-scene-2.wav",
+          startSeconds: 4,
+          durationSeconds: 3,
+          volume: 0.9
+        },
+        {
+          id: "music",
+          path: "music.wav",
+          durationSeconds: 10,
+          loop: true,
+          volume: 0.25
+        }
+      ]
+    });
+
+    expect(command.args).toContain("-stream_loop");
+    expect(command.args).toContain("-filter_complex");
+    expect(command.args).toContain(
+      "[1:a:0]atrim=0:3,asetpts=PTS-STARTPTS,adelay=4000:all=1,volume=0.9[a0];[2:a:0]atrim=0:10,asetpts=PTS-STARTPTS,volume=0.25[a1];[a0][a1]amix=inputs=2:duration=longest:dropout_transition=0[aout]"
+    );
+  });
+
   it("rejects duplicate audio track ids", () => {
     expect(() =>
       buildEncodeMp4Command({
@@ -116,6 +152,29 @@ describe("buildEncodeMp4Command", () => {
           {
             id: "voice",
             path: "voice-2.wav"
+          }
+        ]
+      })
+    ).toThrow(/ENCODER-AUDIO-001/);
+  });
+
+  it("rejects invalid timed audio tracks", () => {
+    expect(() =>
+      buildEncodeMp4Command({
+        videoInput: {
+          kind: "video_file",
+          inputPath: "scene.mp4"
+        },
+        outputPath: "output/video.mp4",
+        width: 1080,
+        height: 1920,
+        fps: 30,
+        durationSeconds: 5,
+        audioTracks: [
+          {
+            id: "late-voice",
+            path: "voice.wav",
+            startSeconds: 5
           }
         ]
       })
