@@ -33,10 +33,8 @@ OVAF_STORAGE_ROOT = "/content/ovaf-storage"
 
 ### 2. Clone Repository
 
-Doi `REPO_URL` thanh URL repository cua ban.
-
 ```python
-REPO_URL = "https://github.com/<owner>/<repo>.git"
+REPO_URL = "https://github.com/minhnc2843/open-video-automation-framework.git"
 !git clone {REPO_URL} /content/open-video-automation-framework
 %cd /content/open-video-automation-framework
 ```
