@@ -51,6 +51,13 @@ DOMAIN-AREA-NNN
 | `MEDIA-MUSIC-001` | pipeline | error | Music is enabled but no usable music source was provided. |
 | `MEDIA-TIMING-001` | pipeline | error | Voice, subtitle or music timing cannot be synchronized with the Timeline. |
 | `MEDIA-CACHE-001` | storage | warning | Voice, subtitle or music cache key could not be derived or validated. |
+| `REFERENCE-VIDEO-METADATA-001` | validation | error | Reference video upload metadata is missing or invalid. |
+| `STYLE-PROFILE-SCHEMA-001` | validation | error | Style Profile failed structural JSON Schema validation. |
+| `STYLE-PROFILE-SEMANTIC-001` | validation | error | Style Profile controls are internally inconsistent. |
+| `STYLE-PROFILE-CAPABILITY-001` | provider | warning | Style Profile contains an enabled preference that current renderer/provider capabilities may not reproduce. |
+| `COLAB-ENV-001` | configuration | error | Google Colab or Colab-compatible environment check failed. |
+| `COLAB-SYNC-001` | storage | error | Colab sync manifest is invalid or references unsafe paths. |
+| `COLAB-RESUME-001` | pipeline | error | Colab resume plan cannot proceed because required artifacts or job state are not available. |
 | `API-REQUEST-001` | validation | error | API request body or route parameter is invalid. |
 | `API-NOTFOUND-001` | validation | error | Requested API resource was not found. |
 | `API-LOG-001` | storage | error | API could not read requested job logs. |

@@ -15,11 +15,12 @@ Included now:
 - HTML renderer input/output contracts.
 - FFmpeg encoder and MP4 validation contracts.
 - API request/response contracts for Phase 09 routes.
+- provider plugin, media adapter, Style Profile and Colab operation contracts.
 
 Not included yet:
 
 - JSON Script schema;
-- provider contract;
+- concrete provider implementations;
 - concrete renderer implementation contract;
 - database contract.
 

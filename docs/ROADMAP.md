@@ -171,6 +171,15 @@ Deliverables:
 - Per-property enable/strength controls.
 - Capability warnings.
 
+Definition of Done:
+
+- `schemas/style-profile.schema.json` is the source of truth for Style Profile snapshots.
+- `@ovaf/contracts` exposes Reference Video metadata and Style Profile contracts.
+- `@ovaf/reference-video` validates upload metadata, Style Profile schema and semantic control rules.
+- Every style category has `enabled` and `strength` controls.
+- Capability warnings are generated for unsupported properties, high-strength preferences and reference video/output target mismatch.
+- No API upload route, database migration or concrete analysis provider is added in this phase.
+
 ## Phase 14 — Google Colab operations
 
 Deliverables:
@@ -180,6 +189,14 @@ Deliverables:
 - Sync contract for project/assets/output/logs.
 - Resume documentation.
 
+Definition of Done:
+
+- Colab setup script documents and checks the expected runtime layout.
+- `@ovaf/contracts` exposes Colab environment, sync manifest and resume plan contracts.
+- `@ovaf/colab` validates environment checks, sync manifests and resume decisions.
+- `docs/COLAB_OPERATIONS.md` documents setup, sync and resume flow.
+- Phase 14 does not add a permanent backend, distributed queue, Docker/Kubernetes dependency or database migration.
+
 ## Phase 15 — Testing, benchmark and release preparation
 
 Deliverables:
@@ -188,6 +205,14 @@ Deliverables:
 - Basic render benchmark.
 - Example projects.
 - Contributing guide, issue/PR templates.
+
+Definition of Done:
+
+- Repository-level integration smoke test exercises the acceptance path from example JSON Script through API metadata and Colab resume planning.
+- `examples/basic-vertical-short.json` is a valid maintained acceptance fixture.
+- `npm run benchmark:render` reports a deterministic dry-run render benchmark.
+- `npm run acceptance` runs workspace check, typecheck/build, tests, benchmark and audit.
+- Contributing, release checklist and GitHub issue/PR templates are present.
 
 ## Deferred phases
 

@@ -29,6 +29,12 @@
       "path": "./packages/media"
     },
     {
+      "path": "./packages/reference-video"
+    },
+    {
+      "path": "./packages/colab"
+    },
+    {
       "path": "./packages/asset-manager"
     },
     {

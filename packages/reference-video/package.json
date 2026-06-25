@@ -1,0 +1,26 @@
+{
+  "name": "@ovaf/reference-video",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reference video metadata and Style Profile validation primitives.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ovaf/contracts": "0.0.0",
+    "ajv": "^8.17.0",
+    "ajv-formats": "^3.0.1"
+  }
+}

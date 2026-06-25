@@ -1,0 +1,193 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://open-video-automation-framework.local/schemas/style-profile.schema.json",
+  "title": "Open Video Automation Style Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "referenceVideo", "properties", "warnings"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "referenceVideo": {
+      "$ref": "#/$defs/referenceVideoMetadata"
+    },
+    "analysisProviderId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cameraMovement",
+        "motionIntensity",
+        "composition",
+        "scenePacing",
+        "transitionStyle",
+        "textPlacement",
+        "colorPalette",
+        "lighting",
+        "audioRhythm"
+      ],
+      "properties": {
+        "cameraMovement": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "motionIntensity": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "composition": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "scenePacing": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "transitionStyle": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "textPlacement": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "colorPalette": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "lighting": {
+          "$ref": "#/$defs/styleProfileProperty"
+        },
+        "audioRhythm": {
+          "$ref": "#/$defs/styleProfileProperty"
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/capabilityWarning"
+      }
+    }
+  },
+  "$defs": {
+    "referenceVideoMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "fileName",
+        "storagePath",
+        "mimeType",
+        "sizeBytes",
+        "checksumSha256",
+        "durationSeconds",
+        "width",
+        "height",
+        "uploadedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "storagePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mimeType": {
+          "type": "string",
+          "pattern": "^video/"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "checksumSha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "uploadedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "styleProfileProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "strength", "summary"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "capabilityWarning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "humanReadableMessage", "technicalDetails"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "const": "STYLE-PROFILE-CAPABILITY-001"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "warning"]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "humanReadableMessage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "technicalDetails": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

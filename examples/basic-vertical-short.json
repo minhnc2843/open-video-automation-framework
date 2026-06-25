@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "Acceptance vertical short",
+    "language": "en"
+  },
+  "settings": {
+    "aspectRatio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "maxDurationSeconds": 10,
+    "voiceEnabled": true,
+    "musicEnabled": true,
+    "subtitleEnabled": true
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "durationSeconds": 4,
+      "voice": {
+        "text": "Start with a clear hook."
+      },
+      "layers": [
+        {
+          "id": "bg-001",
+          "type": "background",
+          "source": {
+            "kind": "color",
+            "value": "#0f766e"
+          }
+        },
+        {
+          "id": "text-001",
+          "type": "text",
+          "content": "Build from structure, not guesses."
+        }
+      ]
+    },
+    {
+      "id": "scene-002",
+      "durationSeconds": 6,
+      "voice": {
+        "text": "Then validate, render, encode and keep the logs."
+      },
+      "layers": [
+        {
+          "id": "bg-002",
+          "type": "background",
+          "source": {
+            "kind": "color",
+            "value": "#111827"
+          }
+        },
+        {
+          "id": "text-002",
+          "type": "text",
+          "content": "A debuggable video pipeline."
+        }
+      ]
+    }
+  ]
+}

@@ -11,4 +11,6 @@ export * from "./renderer.js";
 export * from "./encoder.js";
 export * from "./providers.js";
 export * from "./media.js";
+export * from "./style-profile.js";
+export * from "./colab.js";
 export * from "./api.js";

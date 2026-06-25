@@ -82,6 +82,9 @@ open-video-automation/
 │   ├── validator/
 │   ├── timeline/
 │   ├── providers/
+│   ├── media/
+│   ├── reference-video/
+│   ├── colab/
 │   ├── renderer-html/
 │   ├── asset-manager/
 │   ├── logger/
@@ -118,7 +121,7 @@ open-video-automation/
 
 ## Trạng thái hiện tại
 
-Repository hiện đã hoàn thành baseline từ **Phase 00** đến **Phase 10**. Các module chính hiện có: contracts/config, SQLite persistence, JSON Script validator, timeline engine, asset/cache primitives, job worker/logger, HTML scene renderer, FFmpeg encoder adapter, Fastify API và React/Vite Web UI baseline.
+Repository hiện đã hoàn thành baseline từ **Phase 00** đến **Phase 15**. Các module chính hiện có: contracts/config, SQLite persistence, JSON Script validator, timeline engine, asset/cache primitives, job worker/logger, HTML scene renderer, FFmpeg encoder adapter, Fastify API, React/Vite Web UI baseline, provider plugin infrastructure, media adapters, reference video Style Profile, Google Colab operations và acceptance/release tooling.
 
 ## Kiểm tra baseline trên Windows
 
@@ -126,10 +129,10 @@ Chạy trong PowerShell hoặc Command Prompt tại thư mục repository:
 
 ```powershell
 npm install
-npm run check
+npm run acceptance
 ```
 
-Kết quả mong đợi: `Workspace baseline check passed.`
+Kết quả mong đợi: workspace check, TypeScript build, unit/integration tests, dry-run render benchmark và npm audit đều pass.
 
 Sau Phase 01, `npm run check` cũng chạy TypeScript build và unit tests.
 
@@ -166,6 +169,16 @@ Mặc định UI gọi API tại `http://localhost:3000`; có thể đổi bằn
 Sau Phase 11, provider plugin infrastructure nằm trong [`packages/providers`](packages/providers): provider contract, registry, credential encryption vault, health/generation runner và normalized provider errors. Phase này chưa thêm provider cụ thể như Gemini, OpenAI hoặc ElevenLabs.
 
 Sau Phase 12, media adapters nằm trong [`packages/media`](packages/media): voice synthesis request plan, subtitle SRT document builder, music track plan, timed audio tracks và deterministic media cache keys. FFmpeg encoder đã hiểu optional audio timing fields để mix voice/music đúng vị trí.
+
+Sau Phase 13, reference video Style Profile nằm trong [`packages/reference-video`](packages/reference-video) và [`schemas/style-profile.schema.json`](schemas/style-profile.schema.json): upload metadata validation, per-property enable/strength controls và capability warnings. Phase này chưa thêm upload API, database migration hoặc provider phân tích video cụ thể.
+
+Sau Phase 14, Google Colab operations nằm trong [`packages/colab`](packages/colab), [`colab/setup_colab.py`](colab/setup_colab.py) và [`docs/COLAB_OPERATIONS.md`](docs/COLAB_OPERATIONS.md): environment checks, sync manifest contract, storage layout và resume planning cho Colab session tạm thời.
+
+Sau Phase 15, nghiệm thu dự án nằm trong [`tests/integration`](tests/integration), [`examples/basic-vertical-short.json`](examples/basic-vertical-short.json), [`scripts/benchmark-render.mjs`](scripts/benchmark-render.mjs), [`CONTRIBUTING.md`](CONTRIBUTING.md) và [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md). Chạy full acceptance bằng:
+
+```powershell
+npm run acceptance
+```
 
 ## Đóng góp
 
