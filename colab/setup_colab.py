@@ -31,6 +31,25 @@ BROWSER_CANDIDATES = [
     "chromium-browser",
 ]
 
+PLAYWRIGHT_RESOLVE_SCRIPT = """
+const packages = ["playwright", "playwright-core"];
+let lastError;
+for (const packageName of packages) {
+  try {
+    const mod = await import(packageName);
+    const executablePath = mod.chromium?.executablePath?.();
+    if (executablePath) {
+      process.stdout.write(executablePath);
+      process.exit(0);
+    }
+  } catch (error) {
+    lastError = error;
+  }
+}
+process.stderr.write(lastError instanceof Error ? lastError.message : "Playwright is not installed.");
+process.exit(1);
+"""
+
 STORAGE_DIRS = ["projects", "assets", "cache", "logs", "temp", "output"]
 
 
@@ -87,7 +106,8 @@ def main() -> int:
 
 
 def check_command(command: str, args: list[str]) -> dict[str, object]:
-    if shutil.which(command) is None:
+    command_path = shutil.which(command)
+    if command_path is None:
         return {
             "name": normalize_name(command),
             "ok": False,
@@ -96,13 +116,23 @@ def check_command(command: str, args: list[str]) -> dict[str, object]:
             "technicalDetails": command,
         }
 
-    completed = subprocess.run(
-        [command, *args],
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
+    try:
+        completed = subprocess.run(
+            [command_path, *args],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except OSError as error:
+        return {
+            "name": normalize_name(command),
+            "ok": False,
+            "required": True,
+            "humanReadableMessage": f"{normalize_name(command)} command could not be executed.",
+            "technicalDetails": str(error),
+        }
+
     output = first_line(completed.stdout) or first_line(completed.stderr) or f"exit={completed.returncode}"
     return {
         "name": normalize_name(command),
@@ -117,10 +147,10 @@ def check_command(command: str, args: list[str]) -> dict[str, object]:
 
 def check_browser() -> dict[str, object]:
     attempts = []
-    for candidate in browser_candidates():
+    for label, candidate in browser_candidates(attempts):
         command = resolve_command(candidate)
         if command is None:
-            attempts.append(f"{candidate}: not found")
+            attempts.append(f"{label}: not found")
             continue
 
         try:
@@ -132,7 +162,7 @@ def check_browser() -> dict[str, object]:
                 text=True,
             )
         except OSError as error:
-            attempts.append(f"{candidate}: {error}")
+            attempts.append(f"{label}: {error}")
             continue
         output = first_line(completed.stdout) or first_line(completed.stderr) or f"exit={completed.returncode}"
         combined_output = f"{completed.stdout}\n{completed.stderr}".casefold()
@@ -142,28 +172,63 @@ def check_browser() -> dict[str, object]:
                 "name": "chromium",
                 "ok": True,
                 "required": True,
-                "humanReadableMessage": f"chromium is available via {candidate}.",
+                "humanReadableMessage": f"chromium is available via {label}.",
                 "technicalDetails": f"{command}: {output}",
             }
 
         reason = "snap launcher output" if "snap" in combined_output else f"exit={completed.returncode}"
-        attempts.append(f"{candidate}: {reason}; {output}")
+        attempts.append(f"{label}: {reason}; {output}")
 
     return {
         "name": "chromium",
         "ok": False,
         "required": True,
         "humanReadableMessage": (
-            "No usable Chromium or Chrome browser was found. Set CHROMIUM_PATH to a "
-            "Playwright-managed Chromium executable or install a compatible .deb browser such as Google Chrome."
+            "No usable Chromium browser was found. Run `npx playwright install chromium`, "
+            "set PLAYWRIGHT_BROWSERS_PATH if you use a custom browser cache, or set CHROMIUM_PATH "
+            "to a Playwright-managed Chromium executable."
         ),
         "technicalDetails": " | ".join(attempts),
     }
 
 
-def browser_candidates() -> list[str]:
+def browser_candidates(attempts: list[str]) -> list[tuple[str, str]]:
+    candidates: list[tuple[str, str]] = []
     env_path = os.environ.get("CHROMIUM_PATH", "").strip()
-    return ([env_path] if env_path else []) + BROWSER_CANDIDATES
+    if env_path:
+        candidates.append(("CHROMIUM_PATH", env_path))
+
+    playwright_path, playwright_error = resolve_playwright_chromium_executable()
+    if playwright_path:
+        candidates.append(("Playwright-managed Chromium", playwright_path))
+    elif playwright_error:
+        attempts.append(f"Playwright-managed Chromium: {playwright_error}")
+
+    candidates.extend((candidate, candidate) for candidate in BROWSER_CANDIDATES)
+    return candidates
+
+
+def resolve_playwright_chromium_executable() -> tuple[str | None, str | None]:
+    node_path = shutil.which("node")
+    if node_path is None:
+        return None, "node command was not found"
+
+    try:
+        completed = subprocess.run(
+            [node_path, "--input-type=module", "-e", PLAYWRIGHT_RESOLVE_SCRIPT],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except OSError as error:
+        return None, str(error)
+
+    executable_path = completed.stdout.strip()
+    if completed.returncode == 0 and executable_path:
+        return executable_path, None
+
+    return None, first_line(completed.stderr) or first_line(completed.stdout) or f"exit={completed.returncode}"
 
 
 def resolve_command(candidate: str) -> str | None:

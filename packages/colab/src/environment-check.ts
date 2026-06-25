@@ -14,6 +14,7 @@ export interface CommandResult {
 export interface ColabEnvironmentProbe {
   readonly run: (command: string, args: readonly string[]) => Promise<CommandResult>;
   readonly pathExists: (path: string) => Promise<boolean>;
+  readonly resolvePlaywrightChromiumExecutable?: () => Promise<string | undefined>;
 }
 
 export interface CheckColabEnvironmentOptions {
@@ -25,6 +26,12 @@ export interface CheckColabEnvironmentOptions {
 }
 
 const BROWSER_CANDIDATES = ["chromium", "google-chrome", "google-chrome-stable", "chrome", "chromium-browser"] as const;
+const PLAYWRIGHT_PACKAGES = ["playwright", "playwright-core"] as const;
+
+interface BrowserCandidate {
+  readonly label: string;
+  readonly command: string;
+}
 
 export async function checkColabEnvironment(options: CheckColabEnvironmentOptions): Promise<ColabEnvironmentReport> {
   const storageRoot = options.storageRoot ?? "/content/ovaf-storage";
@@ -60,32 +67,32 @@ export async function checkColabEnvironment(options: CheckColabEnvironmentOption
 async function checkBrowser(probe: ColabEnvironmentProbe): Promise<ColabEnvironmentCheckResult> {
   const attempts: string[] = [];
 
-  for (const candidate of browserCandidates()) {
+  for (const candidate of await browserCandidates(probe, attempts)) {
     try {
-      const result = await probe.run(candidate, ["--version"]);
+      const result = await probe.run(candidate.command, ["--version"]);
       const output = firstLine(result.stdout) ?? firstLine(result.stderr) ?? `Command exited with ${result.exitCode}.`;
       const combinedOutput = `${result.stdout}\n${result.stderr}`;
 
       if (result.exitCode === 0 && !containsSnapLauncherOutput(combinedOutput)) {
         return {
-          humanReadableMessage: `chromium is available via ${candidate}.`,
+          humanReadableMessage: `chromium is available via ${candidate.label}.`,
           name: "chromium",
           ok: true,
           required: true,
-          technicalDetails: output
+          technicalDetails: `${candidate.command}: ${output}`
         };
       }
 
       const reason = containsSnapLauncherOutput(combinedOutput) ? "snap launcher output" : `exit=${result.exitCode}`;
-      attempts.push(`${candidate}: ${reason}; ${output}`);
+      attempts.push(`${candidate.label}: ${reason}; ${output}`);
     } catch (error) {
-      attempts.push(`${candidate}: ${error instanceof Error ? error.message : String(error)}`);
+      attempts.push(`${candidate.label}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   return {
     humanReadableMessage:
-      "No usable Chromium or Chrome browser was found. Set CHROMIUM_PATH to a Playwright-managed Chromium executable or install a compatible .deb browser such as Google Chrome.",
+      "No usable Chromium browser was found. Run `npx playwright install chromium`, set PLAYWRIGHT_BROWSERS_PATH if you use a custom browser cache, or set CHROMIUM_PATH to a Playwright-managed Chromium executable.",
     name: "chromium",
     ok: false,
     required: true,
@@ -93,11 +100,63 @@ async function checkBrowser(probe: ColabEnvironmentProbe): Promise<ColabEnvironm
   };
 }
 
-function browserCandidates(): readonly string[] {
+async function browserCandidates(
+  probe: ColabEnvironmentProbe,
+  attempts: string[]
+): Promise<readonly BrowserCandidate[]> {
+  const candidates: BrowserCandidate[] = [];
   const configuredPath = process.env.CHROMIUM_PATH?.trim();
-  return configuredPath === undefined || configuredPath.length === 0
-    ? BROWSER_CANDIDATES
-    : [configuredPath, ...BROWSER_CANDIDATES];
+  if (configuredPath !== undefined && configuredPath.length > 0) {
+    candidates.push({ command: configuredPath, label: "CHROMIUM_PATH" });
+  }
+
+  try {
+    const playwrightExecutablePath = await resolvePlaywrightChromiumExecutable(probe);
+    if (playwrightExecutablePath !== undefined && playwrightExecutablePath.length > 0) {
+      candidates.push({
+        command: playwrightExecutablePath,
+        label: "Playwright-managed Chromium"
+      });
+    }
+  } catch (error) {
+    attempts.push(`Playwright-managed Chromium: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  candidates.push(...BROWSER_CANDIDATES.map((candidate) => ({ command: candidate, label: candidate })));
+  return candidates;
+}
+
+async function resolvePlaywrightChromiumExecutable(probe: ColabEnvironmentProbe): Promise<string | undefined> {
+  if (probe.resolvePlaywrightChromiumExecutable !== undefined) {
+    return probe.resolvePlaywrightChromiumExecutable();
+  }
+
+  for (const packageName of PLAYWRIGHT_PACKAGES) {
+    try {
+      const mod = await importOptionalPlaywright(packageName);
+      const executablePath = mod.chromium?.executablePath?.();
+      if (typeof executablePath === "string" && executablePath.length > 0) {
+        return executablePath;
+      }
+    } catch {
+      // Optional dependency: continue to the next Playwright package name.
+    }
+  }
+
+  return undefined;
+}
+
+interface OptionalPlaywrightModule {
+  readonly chromium?: {
+    readonly executablePath?: () => string;
+  };
+}
+
+async function importOptionalPlaywright(packageName: string): Promise<OptionalPlaywrightModule> {
+  const importer = new Function("packageName", "return import(packageName);") as (
+    packageName: string
+  ) => Promise<OptionalPlaywrightModule>;
+  return importer(packageName);
 }
 
 async function checkCommand(

@@ -10,7 +10,7 @@ Colab khong phai la backend production luon bat va khong phai source of truth. D
 - Repository Git cua du an.
 - Google Drive neu muon giu state sau khi Colab reset.
 - Node.js `>=22`, npm `>=10`.
-- `ffmpeg`, `ffprobe`, va mot browser Chromium/Chrome dung duoc. Setup se thu theo thu tu: `CHROMIUM_PATH`, `chromium`, `google-chrome`, `google-chrome-stable`, `chrome`, `chromium-browser`.
+- `ffmpeg`, `ffprobe`, va Chromium cua Playwright. Setup se thu theo thu tu: `CHROMIUM_PATH`, Playwright-managed Chromium, `chromium`, `google-chrome`, `google-chrome-stable`, `chrome`, `chromium-browser`.
 
 ## Cai Dat Nhanh Tren Colab
 
@@ -75,27 +75,24 @@ Neu Node nho hon `22`, cai Node.js 22:
 Khuyen dung Playwright-managed Chromium tren Colab de tranh `chromium-browser` snap launcher cua Ubuntu:
 
 ```python
-!npx -y playwright@latest install --with-deps chromium
+!npx playwright install chromium
 ```
 
-Dat `CHROMIUM_PATH` cho runtime notebook:
+Mac dinh Playwright luu browser trong cache cua runtime Colab. Neu muon cache browser tren Drive de tai lai nhanh hon, dat `PLAYWRIGHT_BROWSERS_PATH` truoc khi install:
 
 ```python
-import glob
 import os
 
-matches = sorted(glob.glob("/root/.cache/ms-playwright/chromium-*/chrome-linux/chrome"))
-assert matches, "Playwright Chromium executable was not found."
-os.environ["CHROMIUM_PATH"] = matches[-1]
-print(os.environ["CHROMIUM_PATH"])
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/content/drive/MyDrive/ovaf/ms-playwright"
+!npx playwright install chromium
 ```
 
-Lua chon khac la cai Google Chrome bang goi `.deb` tu nha cung cap, sau do setup se tu tim `google-chrome` hoac `google-chrome-stable`:
+`setup_colab.py` se tu resolve Chromium executable tu Playwright hoac `PLAYWRIGHT_BROWSERS_PATH`. Chi dat `CHROMIUM_PATH` khi ban muon tro thang toi mot executable rieng:
 
 ```python
-!wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-!sudo apt-get install -y /tmp/google-chrome.deb
-!google-chrome --version || google-chrome-stable --version
+import os
+
+os.environ["CHROMIUM_PATH"] = "/absolute/path/to/chrome"
 ```
 
 ### 5. Cai Dependencies Cua Du An
@@ -284,21 +281,19 @@ Cai Node.js 22 theo cell o muc "Cai Node.js 22 Neu Can", sau do chay lai `npm in
 Khong cai `chromium-browser` bang apt tren Colab, vi binary `/usr/bin/chromium-browser` co the chi la snap launcher va khong chay duoc. Dung Playwright-managed Chromium:
 
 ```python
-!npx -y playwright@latest install --with-deps chromium
+!npx playwright install chromium
 ```
 
-Sau do dat `CHROMIUM_PATH`:
+Neu muon luu browser cache tren Drive:
 
 ```python
-import glob
 import os
 
-matches = sorted(glob.glob("/root/.cache/ms-playwright/chromium-*/chrome-linux/chrome"))
-assert matches, "Playwright Chromium executable was not found."
-os.environ["CHROMIUM_PATH"] = matches[-1]
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/content/drive/MyDrive/ovaf/ms-playwright"
+!npx playwright install chromium
 ```
 
-Hoac cai mot browser `.deb` tu nha cung cap, vi du Google Chrome stable.
+Sau do chay lai `setup_colab.py`; script se tu detect Playwright-managed Chromium.
 
 ### `google_drive_mount does not exist`
 

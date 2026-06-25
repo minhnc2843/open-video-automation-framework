@@ -79,11 +79,43 @@ describe("checkColabEnvironment", () => {
           expect.objectContaining({
             name: "chromium",
             ok: true,
-            humanReadableMessage: "chromium is available via /opt/playwright/chromium/chrome."
+            humanReadableMessage: "chromium is available via CHROMIUM_PATH."
           })
         ])
       );
     });
+  });
+
+  it("detects Playwright-managed Chromium before system browser candidates", async () => {
+    const report = await checkColabEnvironment({
+      probe: createProbe({
+        commands: {
+          "/root/.cache/ms-playwright/chromium-1234/chrome-linux/chrome --version": {
+            exitCode: 0,
+            stderr: "",
+            stdout: "Chromium 130.0.0\n"
+          },
+          "ffmpeg -version": { exitCode: 0, stderr: "", stdout: "ffmpeg version 7.0\n" },
+          "ffprobe -version": { exitCode: 0, stderr: "", stdout: "ffprobe version 7.0\n" },
+          "node --version": { exitCode: 0, stderr: "", stdout: "v22.3.0\n" },
+          "npm --version": { exitCode: 0, stderr: "", stdout: "10.8.1\n" }
+        },
+        paths: ["/content/ovaf-storage"],
+        playwrightExecutablePath: "/root/.cache/ms-playwright/chromium-1234/chrome-linux/chrome"
+      })
+    });
+
+    expect(report.ok).toBe(true);
+    expect(report.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          humanReadableMessage: "chromium is available via Playwright-managed Chromium.",
+          name: "chromium",
+          ok: true,
+          technicalDetails: expect.stringContaining("/root/.cache/ms-playwright/chromium-1234/chrome-linux/chrome")
+        })
+      ])
+    );
   });
 
   it("rejects the Colab chromium-browser snap launcher", async () => {
@@ -260,9 +292,11 @@ describe("buildColabStoragePaths", () => {
 function createProbe(options: {
   readonly commands: Record<string, CommandResult>;
   readonly paths: readonly string[];
+  readonly playwrightExecutablePath?: string;
 }): ColabEnvironmentProbe {
   return {
     pathExists: async (targetPath) => options.paths.includes(targetPath),
+    resolvePlaywrightChromiumExecutable: async () => options.playwrightExecutablePath,
     run: async (command, args) => {
       const result = options.commands[[command, ...args].join(" ")];
       if (result === undefined) {
