@@ -24,6 +24,8 @@ export interface CheckColabEnvironmentOptions {
   readonly googleDriveMountPath?: string;
 }
 
+const BROWSER_CANDIDATES = ["chromium", "google-chrome", "google-chrome-stable", "chrome", "chromium-browser"] as const;
+
 export async function checkColabEnvironment(options: CheckColabEnvironmentOptions): Promise<ColabEnvironmentReport> {
   const storageRoot = options.storageRoot ?? "/content/ovaf-storage";
   const checks: ColabEnvironmentCheckResult[] = [];
@@ -32,7 +34,7 @@ export async function checkColabEnvironment(options: CheckColabEnvironmentOption
   checks.push(await checkVersionCommand(options.probe, "npm", ["--version"], "npm", true, 10));
   checks.push(await checkCommand(options.probe, "ffmpeg", ["-version"], "ffmpeg", true));
   checks.push(await checkCommand(options.probe, "ffprobe", ["-version"], "ffprobe", true));
-  checks.push(await checkCommand(options.probe, "chromium-browser", ["--version"], "chromium", true));
+  checks.push(await checkBrowser(options.probe));
   checks.push(await checkPath(options.probe, storageRoot, "storage_root", true));
 
   if (options.googleDriveMountPath !== undefined) {
@@ -53,6 +55,49 @@ export async function checkColabEnvironment(options: CheckColabEnvironmentOption
     runtime: options.runtime ?? "google_colab",
     storageRoot
   };
+}
+
+async function checkBrowser(probe: ColabEnvironmentProbe): Promise<ColabEnvironmentCheckResult> {
+  const attempts: string[] = [];
+
+  for (const candidate of browserCandidates()) {
+    try {
+      const result = await probe.run(candidate, ["--version"]);
+      const output = firstLine(result.stdout) ?? firstLine(result.stderr) ?? `Command exited with ${result.exitCode}.`;
+      const combinedOutput = `${result.stdout}\n${result.stderr}`;
+
+      if (result.exitCode === 0 && !containsSnapLauncherOutput(combinedOutput)) {
+        return {
+          humanReadableMessage: `chromium is available via ${candidate}.`,
+          name: "chromium",
+          ok: true,
+          required: true,
+          technicalDetails: output
+        };
+      }
+
+      const reason = containsSnapLauncherOutput(combinedOutput) ? "snap launcher output" : `exit=${result.exitCode}`;
+      attempts.push(`${candidate}: ${reason}; ${output}`);
+    } catch (error) {
+      attempts.push(`${candidate}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return {
+    humanReadableMessage:
+      "No usable Chromium or Chrome browser was found. Set CHROMIUM_PATH to a Playwright-managed Chromium executable or install a compatible .deb browser such as Google Chrome.",
+    name: "chromium",
+    ok: false,
+    required: true,
+    technicalDetails: `Tried ${attempts.join(" | ")}`
+  };
+}
+
+function browserCandidates(): readonly string[] {
+  const configuredPath = process.env.CHROMIUM_PATH?.trim();
+  return configuredPath === undefined || configuredPath.length === 0
+    ? BROWSER_CANDIDATES
+    : [configuredPath, ...BROWSER_CANDIDATES];
 }
 
 async function checkCommand(
@@ -138,6 +183,10 @@ async function checkPath(
 
 function firstLine(value: string): string | undefined {
   return value.split(/\r?\n/u).find((line) => line.trim().length > 0)?.trim();
+}
+
+function containsSnapLauncherOutput(value: string): boolean {
+  return value.toLowerCase().includes("snap");
 }
 
 function parseMajorVersion(value: string): number | null {

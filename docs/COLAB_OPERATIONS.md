@@ -19,7 +19,7 @@ npm run build --workspace @ovaf/colab
 python colab/setup_colab.py --storage-root /content/ovaf-storage --drive-root /content/drive/MyDrive/ovaf
 ```
 
-If Node.js is older than 22, install Node.js 22 before `npm install`. If Chromium is missing, install a Chromium package or configure the renderer phase to use an available browser binary.
+If Node.js is older than 22, install Node.js 22 before `npm install`. If Chromium is missing, prefer Playwright-managed Chromium with `CHROMIUM_PATH` or install a compatible `.deb` browser such as Google Chrome. Avoid Ubuntu `chromium-browser` snap launchers on Colab because they are not usable browser binaries.
 
 ## Storage Layout
 

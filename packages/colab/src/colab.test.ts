@@ -16,7 +16,7 @@ describe("checkColabEnvironment", () => {
       now: () => new Date("2026-06-25T00:00:00.000Z"),
       probe: createProbe({
         commands: {
-          "chromium-browser --version": { exitCode: 0, stderr: "", stdout: "Chromium 125.0.0\n" },
+          "chromium --version": { exitCode: 0, stderr: "", stdout: "Chromium 125.0.0\n" },
           "ffmpeg -version": { exitCode: 0, stderr: "", stdout: "ffmpeg version 7.0\n" },
           "ffprobe -version": { exitCode: 0, stderr: "", stdout: "ffprobe version 7.0\n" },
           "node --version": { exitCode: 0, stderr: "", stdout: "v22.3.0\n" },
@@ -39,7 +39,7 @@ describe("checkColabEnvironment", () => {
     const report = await checkColabEnvironment({
       probe: createProbe({
         commands: {
-          "chromium-browser --version": { exitCode: 0, stderr: "", stdout: "Chromium 125.0.0\n" },
+          "chromium --version": { exitCode: 0, stderr: "", stdout: "Chromium 125.0.0\n" },
           "ffmpeg -version": { exitCode: 0, stderr: "", stdout: "ffmpeg version 7.0\n" },
           "ffprobe -version": { exitCode: 0, stderr: "", stdout: "ffprobe version 7.0\n" },
           "node --version": { exitCode: 0, stderr: "", stdout: "v20.0.0\n" },
@@ -54,6 +54,65 @@ describe("checkColabEnvironment", () => {
       expect.arrayContaining([
         expect.objectContaining({ name: "node", ok: false }),
         expect.objectContaining({ name: "storage_root", ok: false })
+      ])
+    );
+  });
+
+  it("prefers CHROMIUM_PATH before system browser candidates", async () => {
+    await withChromiumPath("/opt/playwright/chromium/chrome", async () => {
+      const report = await checkColabEnvironment({
+        probe: createProbe({
+          commands: {
+            "/opt/playwright/chromium/chrome --version": { exitCode: 0, stderr: "", stdout: "Chromium 130.0.0\n" },
+            "ffmpeg -version": { exitCode: 0, stderr: "", stdout: "ffmpeg version 7.0\n" },
+            "ffprobe -version": { exitCode: 0, stderr: "", stdout: "ffprobe version 7.0\n" },
+            "node --version": { exitCode: 0, stderr: "", stdout: "v22.3.0\n" },
+            "npm --version": { exitCode: 0, stderr: "", stdout: "10.8.1\n" }
+          },
+          paths: ["/content/ovaf-storage"]
+        })
+      });
+
+      expect(report.ok).toBe(true);
+      expect(report.checks).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: "chromium",
+            ok: true,
+            humanReadableMessage: "chromium is available via /opt/playwright/chromium/chrome."
+          })
+        ])
+      );
+    });
+  });
+
+  it("rejects the Colab chromium-browser snap launcher", async () => {
+    const report = await checkColabEnvironment({
+      probe: createProbe({
+        commands: {
+          "chromium-browser --version": {
+            exitCode: 0,
+            stderr: "",
+            stdout: "Command '/usr/bin/chromium-browser' requires the chromium snap to be installed.\n"
+          },
+          "ffmpeg -version": { exitCode: 0, stderr: "", stdout: "ffmpeg version 7.0\n" },
+          "ffprobe -version": { exitCode: 0, stderr: "", stdout: "ffprobe version 7.0\n" },
+          "node --version": { exitCode: 0, stderr: "", stdout: "v22.3.0\n" },
+          "npm --version": { exitCode: 0, stderr: "", stdout: "10.8.1\n" }
+        },
+        paths: ["/content/ovaf-storage"]
+      })
+    });
+
+    expect(report.ok).toBe(false);
+    expect(report.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          humanReadableMessage: expect.stringContaining("Playwright-managed Chromium"),
+          name: "chromium",
+          ok: false,
+          technicalDetails: expect.stringContaining("snap launcher output")
+        })
       ])
     );
   });
@@ -232,4 +291,18 @@ function createJob(status: Parameters<typeof buildColabResumePlan>[0]["job"]["st
     status,
     updatedAt: "2026-06-25T00:00:00.000Z"
   };
+}
+
+async function withChromiumPath(value: string, callback: () => Promise<void>): Promise<void> {
+  const previous = process.env.CHROMIUM_PATH;
+  process.env.CHROMIUM_PATH = value;
+  try {
+    await callback();
+  } finally {
+    if (previous === undefined) {
+      delete process.env.CHROMIUM_PATH;
+    } else {
+      process.env.CHROMIUM_PATH = previous;
+    }
+  }
 }

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 from datetime import datetime, timezone
@@ -20,7 +21,14 @@ REQUIRED_COMMANDS = [
     ("npm", ["--version"]),
     ("ffmpeg", ["-version"]),
     ("ffprobe", ["-version"]),
-    ("chromium-browser", ["--version"]),
+]
+
+BROWSER_CANDIDATES = [
+    "chromium",
+    "google-chrome",
+    "google-chrome-stable",
+    "chrome",
+    "chromium-browser",
 ]
 
 STORAGE_DIRS = ["projects", "assets", "cache", "logs", "temp", "output"]
@@ -40,6 +48,7 @@ def main() -> int:
     checks = []
     for command, command_args in REQUIRED_COMMANDS:
         checks.append(check_command(command, command_args))
+    checks.append(check_browser())
 
     checks.append(
         {
@@ -104,6 +113,63 @@ def check_command(command: str, args: list[str]) -> dict[str, object]:
         else f"{normalize_name(command)} check failed.",
         "technicalDetails": output,
     }
+
+
+def check_browser() -> dict[str, object]:
+    attempts = []
+    for candidate in browser_candidates():
+        command = resolve_command(candidate)
+        if command is None:
+            attempts.append(f"{candidate}: not found")
+            continue
+
+        try:
+            completed = subprocess.run(
+                [command, "--version"],
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        except OSError as error:
+            attempts.append(f"{candidate}: {error}")
+            continue
+        output = first_line(completed.stdout) or first_line(completed.stderr) or f"exit={completed.returncode}"
+        combined_output = f"{completed.stdout}\n{completed.stderr}".casefold()
+
+        if completed.returncode == 0 and "snap" not in combined_output:
+            return {
+                "name": "chromium",
+                "ok": True,
+                "required": True,
+                "humanReadableMessage": f"chromium is available via {candidate}.",
+                "technicalDetails": f"{command}: {output}",
+            }
+
+        reason = "snap launcher output" if "snap" in combined_output else f"exit={completed.returncode}"
+        attempts.append(f"{candidate}: {reason}; {output}")
+
+    return {
+        "name": "chromium",
+        "ok": False,
+        "required": True,
+        "humanReadableMessage": (
+            "No usable Chromium or Chrome browser was found. Set CHROMIUM_PATH to a "
+            "Playwright-managed Chromium executable or install a compatible .deb browser such as Google Chrome."
+        ),
+        "technicalDetails": " | ".join(attempts),
+    }
+
+
+def browser_candidates() -> list[str]:
+    env_path = os.environ.get("CHROMIUM_PATH", "").strip()
+    return ([env_path] if env_path else []) + BROWSER_CANDIDATES
+
+
+def resolve_command(candidate: str) -> str | None:
+    if "/" in candidate or "\\" in candidate:
+        return candidate if Path(candidate).exists() else None
+    return shutil.which(candidate)
 
 
 def normalize_name(command: str) -> str:
