@@ -75,6 +75,7 @@ Neu Node nho hon `22`, cai Node.js 22:
 Khuyen dung Playwright-managed Chromium tren Colab de tranh `chromium-browser` snap launcher cua Ubuntu:
 
 ```python
+!npx playwright install-deps chromium
 !npx playwright install chromium
 ```
 
@@ -84,6 +85,7 @@ Mac dinh Playwright luu browser trong cache cua runtime Colab. Neu muon cache br
 import os
 
 os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/content/drive/MyDrive/ovaf/ms-playwright"
+!npx playwright install-deps chromium
 !npx playwright install chromium
 ```
 
@@ -165,6 +167,34 @@ Chay full acceptance:
 ```
 
 Acceptance gom workspace check, TypeScript build, unit/integration tests, render benchmark dry-run va `npm audit`.
+
+## Render MP4 Example Tren Colab
+
+Sau khi `setup_colab.py` bao `"ok": true`, render fixture example:
+
+```python
+%cd /content/open-video-automation-framework
+!OVAF_STORAGE_ROOT=/content/ovaf-storage npm run render -- examples/basic-vertical-short.json
+```
+
+Output mong doi:
+
+```text
+/content/ovaf-storage/output/basic-vertical-short.mp4
+```
+
+Kiem tra nhanh bang FFprobe:
+
+```python
+!ffprobe -v error -show_format -show_streams -print_format json /content/ovaf-storage/output/basic-vertical-short.mp4
+```
+
+Dong bo output ve Drive:
+
+```python
+!rsync -a /content/ovaf-storage/output/ /content/drive/MyDrive/ovaf/storage/output/
+!rsync -a /content/ovaf-storage/logs/ /content/drive/MyDrive/ovaf/storage/logs/
+```
 
 ## Cach Su Dung Trong Workflow
 
@@ -281,6 +311,7 @@ Cai Node.js 22 theo cell o muc "Cai Node.js 22 Neu Can", sau do chay lai `npm in
 Khong cai `chromium-browser` bang apt tren Colab, vi binary `/usr/bin/chromium-browser` co the chi la snap launcher va khong chay duoc. Dung Playwright-managed Chromium:
 
 ```python
+!npx playwright install-deps chromium
 !npx playwright install chromium
 ```
 
@@ -290,6 +321,7 @@ Neu muon luu browser cache tren Drive:
 import os
 
 os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/content/drive/MyDrive/ovaf/ms-playwright"
+!npx playwright install-deps chromium
 !npx playwright install chromium
 ```
 

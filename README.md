@@ -182,6 +182,38 @@ Sau Phase 15, nghiệm thu dự án nằm trong [`tests/integration`](tests/inte
 npm run acceptance
 ```
 
+## Render MP4 from JSON Script
+
+Phase 16 thêm CLI render MP4 thật từ JSON Script. Lệnh mặc định ghi output vào `storage/output/<input-basename>.mp4` và log JSONL vào `storage/logs/`.
+
+Chuẩn bị một lần sau khi cài dependencies:
+
+```powershell
+npm run typecheck
+npx playwright install chromium
+```
+
+Render example:
+
+```powershell
+npm run render -- examples/basic-vertical-short.json
+```
+
+Kết quả mong đợi:
+
+```text
+storage/output/basic-vertical-short.mp4
+```
+
+Có thể đổi storage root bằng `OVAF_STORAGE_ROOT`:
+
+```powershell
+$env:OVAF_STORAGE_ROOT="D:\ovaf-storage"
+npm run render -- examples/basic-vertical-short.json
+```
+
+CLI dùng Playwright-managed Chromium mặc định và tôn trọng `CHROMIUM_PATH` nếu bạn cần trỏ tới browser executable cụ thể. Phase này không gọi AI provider, không generate voice/music thật, và chỉ nối pipeline deterministic hiện có: validate JSON Script, build timeline, capture scene bằng Playwright, encode MP4 bằng FFmpeg, validate output bằng FFprobe.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.
