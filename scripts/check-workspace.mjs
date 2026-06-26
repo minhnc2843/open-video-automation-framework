@@ -75,6 +75,7 @@ const requiredPaths = [
   "docs/COLAB_OPERATIONS.md",
   "docs/RELEASE_CHECKLIST.md",
   "colab/README.md",
+  "colab/bootstrap_colab.py",
   "colab/setup_colab.py",
   "schemas/style-profile.schema.json",
   "specs/PROJECT_MEMORY.md",

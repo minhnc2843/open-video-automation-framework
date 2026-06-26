@@ -46,6 +46,38 @@ Neu repository da ton tai trong runtime:
 !git pull
 ```
 
+## Fresh Colab Runtime
+
+Mot plain Python script khong mount Google Drive thay notebook duoc. Hay mount Drive truoc trong notebook:
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+Clone repo neu runtime moi:
+
+```python
+REPO_URL = "https://github.com/minhnc2843/open-video-automation-framework.git"
+!git clone {REPO_URL} /content/open-video-automation-framework
+```
+
+Hoac pull neu repo da ton tai:
+
+```python
+%cd /content/open-video-automation-framework
+!git pull
+```
+
+Sau do chay bootstrap mot lenh:
+
+```python
+%cd /content/open-video-automation-framework
+!python colab/bootstrap_colab.py
+```
+
+Bootstrap se chay `npm install`, build TypeScript packages bang `npm run typecheck`, cai Playwright Chromium/deps, tao `/content/ovaf-storage`, tao `/content/drive/MyDrive/ovaf/storage` neu Drive da mount, sync Drive storage vao runtime storage, chay `setup_colab.py`, va in report thanh cong/that bai ro rang.
+
 ### 3. Cai Node.js 22 Neu Can
 
 Kiem tra version truoc:
