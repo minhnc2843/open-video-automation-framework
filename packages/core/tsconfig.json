@@ -6,7 +6,8 @@
     "emitDeclarationOnly": false,
     "exactOptionalPropertyTypes": true,
     "lib": [
-      "ES2023"
+      "ES2023",
+      "DOM"
     ],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -33,6 +34,18 @@
     },
     {
       "path": "../logger"
+    },
+    {
+      "path": "../validator"
+    },
+    {
+      "path": "../timeline"
+    },
+    {
+      "path": "../renderer-html"
+    },
+    {
+      "path": "../encoder-ffmpeg"
     }
   ]
 }

@@ -70,4 +70,36 @@ describe("web API client", () => {
 
     expect(calls).toEqual(["/projects/project%20with%20spaces"]);
   });
+
+  it("uses P2 render job routes", async () => {
+    const calls: string[] = [];
+    const fetcher: ApiFetch = async (input) => {
+      calls.push(input);
+      return {
+        json: async () => ({
+          ok: true,
+          data: {
+            createdAt: "2026-06-27T00:00:00.000Z",
+            jobId: "job-1",
+            projectId: "project-1",
+            status: "queued"
+          }
+        })
+      };
+    };
+    const client = createApiClient({ baseUrl: "http://localhost:3000", fetcher });
+
+    await client.createRenderJob("project 1", { script: { version: "1.0" } });
+    await client.getRenderJobStatus("job 1");
+    await client.getJobLogs("job 1");
+    await client.cancelRenderJob("job 1");
+
+    expect(calls).toEqual([
+      "http://localhost:3000/api/projects/project%201/render-jobs",
+      "http://localhost:3000/api/render-jobs/job%201",
+      "http://localhost:3000/api/render-jobs/job%201/logs",
+      "http://localhost:3000/api/render-jobs/job%201/cancel"
+    ]);
+    expect(client.getRenderJobOutputUrl("job 1")).toBe("http://localhost:3000/api/render-jobs/job%201/output");
+  });
 });

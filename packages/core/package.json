@@ -19,7 +19,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ovaf/encoder-ffmpeg": "0.0.0",
     "@ovaf/contracts": "0.0.0",
-    "@ovaf/logger": "0.0.0"
+    "@ovaf/logger": "0.0.0",
+    "@ovaf/renderer-html": "0.0.0",
+    "@ovaf/timeline": "0.0.0",
+    "@ovaf/validator": "0.0.0",
+    "playwright-core": "^1.57.0"
   }
 }

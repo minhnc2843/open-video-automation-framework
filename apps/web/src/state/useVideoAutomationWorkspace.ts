@@ -1,11 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   ApiResponse,
   JsonObject,
+  JobStatus,
   ProjectLanguage,
   ProjectRecord,
   ProjectVersionRecord,
-  RenderJobRecord,
+  RenderJobStatusResponseData,
+  StructuredLogRecord,
   ValidateScriptResponseData
 } from "@ovaf/contracts";
 import { createApiClient } from "../api/client";
@@ -16,9 +18,10 @@ export type WorkspaceAction =
   | "open-project"
   | "validate-script"
   | "save-version"
-  | "queue-job"
+  | "render-video"
   | "refresh-job"
-  | "load-logs";
+  | "load-logs"
+  | "cancel-job";
 
 export interface ValidationIssue {
   readonly code: string;
@@ -47,9 +50,9 @@ export interface VideoAutomationWorkspaceState {
   readonly apiBaseUrl: string;
   readonly busyAction: WorkspaceAction | null;
   readonly error: string | null;
-  readonly job: RenderJobRecord | null;
+  readonly job: RenderJobStatusResponseData | null;
   readonly latestVersion: ProjectVersionRecord | null;
-  readonly logs: readonly string[];
+  readonly logs: readonly StructuredLogRecord[];
   readonly recentProjects: readonly RecentProject[];
   readonly scriptText: string;
   readonly selectedProject: ProjectRecord | null;
@@ -60,10 +63,11 @@ export interface VideoAutomationWorkspaceState {
 
 export interface VideoAutomationWorkspaceActions {
   readonly createProject: (draft: CreateProjectDraft) => Promise<ProjectRecord | null>;
-  readonly loadLogs: () => Promise<readonly string[] | null>;
+  readonly cancelJob: () => Promise<RenderJobStatusResponseData | null>;
+  readonly loadLogs: () => Promise<readonly StructuredLogRecord[] | null>;
   readonly openProject: (projectId: string) => Promise<ProjectRecord | null>;
-  readonly queueRenderJob: () => Promise<RenderJobRecord | null>;
-  readonly refreshJob: () => Promise<RenderJobRecord | null>;
+  readonly renderVideo: () => Promise<RenderJobStatusResponseData | null>;
+  readonly refreshJob: () => Promise<RenderJobStatusResponseData | null>;
   readonly saveVersion: () => Promise<ProjectVersionRecord | null>;
   readonly setApiBaseUrl: (baseUrl: string) => void;
   readonly setScriptText: (scriptText: string) => void;
@@ -79,9 +83,9 @@ export function useVideoAutomationWorkspace(): UseVideoAutomationWorkspaceResult
   const [apiBaseUrl, setApiBaseUrl] = useState(getDefaultApiBaseUrl);
   const [busyAction, setBusyAction] = useState<WorkspaceAction | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [job, setJob] = useState<RenderJobRecord | null>(null);
+  const [job, setJob] = useState<RenderJobStatusResponseData | null>(null);
   const [latestVersion, setLatestVersion] = useState<ProjectVersionRecord | null>(null);
-  const [logs, setLogs] = useState<readonly string[]>([]);
+  const [logs, setLogs] = useState<readonly StructuredLogRecord[]>([]);
   const [recentProjects, setRecentProjects] = useState<readonly RecentProject[]>([]);
   const [scriptText, setScriptText] = useState(SAMPLE_JSON_SCRIPT);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -94,6 +98,16 @@ export function useVideoAutomationWorkspace(): UseVideoAutomationWorkspaceResult
     () => recentProjects.find((project) => project.record.id === selectedProjectId)?.record ?? null,
     [recentProjects, selectedProjectId]
   );
+
+  const applyJobStatus = useCallback((nextJob: RenderJobStatusResponseData): RenderJobStatusResponseData => {
+    setJob(nextJob);
+    if (isFinalRenderJobStatus(nextJob.status)) {
+      setStatusMessage(`Render job ${nextJob.status}.`);
+    } else {
+      setStatusMessage(`Render job ${nextJob.status}: ${nextJob.progress.currentStage}.`);
+    }
+    return nextJob;
+  }, []);
 
   const runAction = useCallback(
     async <TResult,>(action: WorkspaceAction, work: () => Promise<TResult>): Promise<TResult | null> => {
@@ -245,41 +259,56 @@ export function useVideoAutomationWorkspace(): UseVideoAutomationWorkspaceResult
     [runAction, saveValidatedVersion, selectedProject]
   );
 
-  const queueRenderJob = useCallback(
+  const renderVideo = useCallback(
     async () =>
-      runAction("queue-job", async () => {
+      runAction("render-video", async () => {
         if (selectedProject === null) {
-          throw new Error("Create or open a project before queueing a render job.");
+          throw new Error("Create or open a project before rendering video.");
         }
 
-        const version =
-          latestVersion !== null && latestVersion.projectId === selectedProject.id
-            ? latestVersion
-            : await saveValidatedVersion(selectedProject.id);
-        const renderJob = unwrapResponse(
-          await client.createRenderJob({
-            configSnapshot: {
-              mode: "web-baseline",
-              queuedFrom: "apps/web"
-            },
-            id: createId("job"),
-            logPath: null,
-            outputPath: null,
-            projectId: selectedProject.id,
-            projectVersionId: version.id,
-            providerSnapshot: null,
-            renderEnvironment: {
-              ui: "Phase 10 Web UI baseline"
-            }
+        const validationSummary = await validateCurrentScript();
+        if (!validationSummary.valid) {
+          throw new Error("Fix validation issues before rendering video.");
+        }
+
+        const parsed = parseScriptText(scriptText);
+        if (!parsed.ok) {
+          throw new Error("Fix JSON parsing before rendering video.");
+        }
+
+        const created = unwrapResponse(
+          await client.createRenderJob(selectedProject.id, {
+            script: parsed.value
           })
         );
+        const initialJob: RenderJobStatusResponseData = {
+          error: null,
+          jobId: created.jobId,
+          output: null,
+          progress: {
+            completedScenes: 0,
+            currentStage: "queued",
+            percent: 0,
+            totalScenes: 0
+          },
+          projectId: created.projectId,
+          status: created.status
+        };
 
-        setJob(renderJob);
+        setJob(initialJob);
         setLogs([]);
-        setStatusMessage("Render job metadata queued. Worker execution will attach logs/output in a later phase.");
-        return renderJob;
+        setStatusMessage("Render video started.");
+        return initialJob;
       }),
-    [client, latestVersion, runAction, saveValidatedVersion, selectedProject]
+    [client, runAction, scriptText, selectedProject, validateCurrentScript]
+  );
+
+  const refreshJobById = useCallback(
+    async (jobId: string): Promise<RenderJobStatusResponseData> => {
+      const refreshedJob = unwrapResponse(await client.getRenderJobStatus(jobId));
+      return applyJobStatus(refreshedJob);
+    },
+    [applyJobStatus, client]
   );
 
   const refreshJob = useCallback(
@@ -289,12 +318,9 @@ export function useVideoAutomationWorkspace(): UseVideoAutomationWorkspaceResult
           throw new Error("No render job is selected.");
         }
 
-        const refreshedJob = unwrapResponse(await client.getRenderJob(job.id));
-        setJob(refreshedJob);
-        setStatusMessage(`Render job status is ${refreshedJob.status}.`);
-        return refreshedJob;
+        return refreshJobById(job.jobId);
       }),
-    [client, job, runAction]
+    [job, refreshJobById, runAction]
   );
 
   const loadLogs = useCallback(
@@ -304,26 +330,58 @@ export function useVideoAutomationWorkspace(): UseVideoAutomationWorkspaceResult
           throw new Error("No render job is selected.");
         }
 
-        if (job.logPath === null) {
-          setLogs([]);
-          setStatusMessage("This job does not have a log path yet.");
-          return [];
-        }
-
-        const logData = unwrapResponse(await client.getJobLogs(job.id));
-        setLogs(logData.lines);
-        setStatusMessage(`Loaded ${logData.lines.length} log line(s).`);
-        return logData.lines;
+        const logData = unwrapResponse(await client.getJobLogs(job.jobId));
+        setLogs(logData.logs);
+        setStatusMessage(`Loaded ${logData.logs.length} structured log record(s).`);
+        return logData.logs;
       }),
     [client, job, runAction]
   );
 
+  const cancelJob = useCallback(
+    async () =>
+      runAction("cancel-job", async () => {
+        if (job === null) {
+          throw new Error("No render job is selected.");
+        }
+
+        const cancelled = unwrapResponse(await client.cancelRenderJob(job.jobId));
+        if (cancelled.warning !== undefined) {
+          setStatusMessage(cancelled.warning.message);
+        }
+
+        return refreshJobById(job.jobId);
+      }),
+    [client, job, refreshJobById, runAction]
+  );
+
+  useEffect(() => {
+    if (job === null || !shouldPollRenderJobStatus(job.status)) {
+      return undefined;
+    }
+
+    let disposed = false;
+    const timer = window.setInterval(() => {
+      void refreshJobById(job.jobId).catch((caughtError: unknown) => {
+        if (!disposed) {
+          setError(caughtError instanceof Error ? caughtError.message : String(caughtError));
+        }
+      });
+    }, 1500);
+
+    return () => {
+      disposed = true;
+      window.clearInterval(timer);
+    };
+  }, [job?.jobId, job?.status, refreshJobById]);
+
   return {
     actions: {
+      cancelJob,
       createProject,
       loadLogs,
       openProject,
-      queueRenderJob,
+      renderVideo,
       refreshJob,
       saveVersion,
       setApiBaseUrl,
@@ -425,4 +483,12 @@ function createId(prefix: string): string {
   }
 
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export function isFinalRenderJobStatus(status: JobStatus): boolean {
+  return status === "completed" || status === "failed" || status === "cancelled";
+}
+
+export function shouldPollRenderJobStatus(status: JobStatus): boolean {
+  return !isFinalRenderJobStatus(status);
 }

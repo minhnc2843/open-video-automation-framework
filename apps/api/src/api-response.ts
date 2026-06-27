@@ -1,4 +1,4 @@
-import type { ApiErrorResponse, ApiSuccessResponse, FrameworkErrorCode } from "@ovaf/contracts";
+import type { ApiErrorResponse, ApiSuccessResponse, FrameworkErrorCode, ScriptValidationIssue } from "@ovaf/contracts";
 
 export function ok<TData>(data: TData): ApiSuccessResponse<TData> {
   return {
@@ -10,14 +10,16 @@ export function ok<TData>(data: TData): ApiSuccessResponse<TData> {
 export function fail(
   code: FrameworkErrorCode,
   humanReadableMessage: string,
-  technicalDetails?: string
+  technicalDetails?: string,
+  validationIssues?: readonly ScriptValidationIssue[]
 ): ApiErrorResponse {
   return {
     ok: false,
     error: {
       code,
       humanReadableMessage,
-      ...(technicalDetails === undefined ? {} : { technicalDetails })
+      ...(technicalDetails === undefined ? {} : { technicalDetails }),
+      ...(validationIssues === undefined ? {} : { validationIssues })
     }
   };
 }

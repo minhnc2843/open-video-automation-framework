@@ -3,6 +3,7 @@ import type {
   CreateProjectVersionInput,
   CreateRenderJobInput,
   CreateWorkspaceInput,
+  JobStatus,
   ProjectRecord,
   ProjectVersionRecord,
   RenderJobRecord,
@@ -14,6 +15,17 @@ export interface ApiProjectRepository {
   readonly createProject: (input: CreateProjectInput, now?: Date) => ProjectRecord;
   readonly getProject: (id: string) => ProjectRecord | null;
   readonly createProjectVersion: (input: CreateProjectVersionInput, now?: Date) => ProjectVersionRecord;
+  readonly getProjectVersion: (id: string) => ProjectVersionRecord | null;
   readonly createRenderJob: (input: CreateRenderJobInput, now?: Date) => RenderJobRecord;
   readonly getRenderJob: (id: string) => RenderJobRecord | null;
+  readonly updateRenderJobStatus: (
+    id: string,
+    status: JobStatus,
+    now?: Date,
+    options?: {
+      readonly incrementRetryCount?: boolean;
+      readonly startedAt?: string | null;
+      readonly finishedAt?: string | null;
+    }
+  ) => RenderJobRecord;
 }

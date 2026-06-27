@@ -1,6 +1,7 @@
 import type {
   CreateProjectRequest,
   CreateProjectVersionRequest,
+  CreateRenderJobFromScriptRequest,
   CreateRenderJobRequest,
   CreateWorkspaceRequest,
   JsonObject,
@@ -52,6 +53,10 @@ export function isCreateRenderJobRequest(value: unknown): value is CreateRenderJ
     (value.logPath === undefined || value.logPath === null || isNonEmptyString(value.logPath)) &&
     (value.outputPath === undefined || value.outputPath === null || isNonEmptyString(value.outputPath))
   );
+}
+
+export function isCreateRenderJobFromScriptRequest(value: unknown): value is CreateRenderJobFromScriptRequest {
+  return isRecord(value) && "script" in value;
 }
 
 export function getRouteParam(params: unknown, name: string): string | null {

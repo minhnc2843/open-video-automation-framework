@@ -8,7 +8,7 @@ export interface ScriptPanelProps {
   readonly scriptText: string;
   readonly selectedProject: ProjectRecord | null;
   readonly validation: ValidationSummary | null;
-  readonly onQueueRenderJob: () => void;
+  readonly onRenderVideo: () => void;
   readonly onSaveVersion: () => void;
   readonly onScriptTextChange: (scriptText: string) => void;
   readonly onValidateScript: () => void;
@@ -51,11 +51,11 @@ export function ScriptPanel(props: ScriptPanelProps): ReactElement {
           </button>
           <button
             className="rounded-md bg-emerald-700 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:bg-neutral-400"
-            disabled={!canUseProject || props.busyAction === "queue-job"}
-            onClick={props.onQueueRenderJob}
+            disabled={!canUseProject || props.busyAction === "render-video"}
+            onClick={props.onRenderVideo}
             type="button"
           >
-            {props.busyAction === "queue-job" ? "Queueing..." : "Queue job"}
+            {props.busyAction === "render-video" ? "Starting..." : "Render video"}
           </button>
         </div>
       </div>

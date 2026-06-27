@@ -196,7 +196,8 @@ describe("API app", () => {
       ok: true,
       data: {
         jobId: "job-1",
-        lines: ["{\"message\":\"one\"}", "{\"message\":\"two\"}"]
+        lines: ["{\"message\":\"one\"}", "{\"message\":\"two\"}"],
+        logs: []
       }
     });
   });

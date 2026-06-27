@@ -1,55 +1,83 @@
 export const SAMPLE_JSON_SCRIPT = `{
   "version": "1.0",
   "project": {
-    "name": "Launch teaser",
-    "language": "vi"
+    "name": "Animated deterministic short",
+    "language": "en"
   },
   "settings": {
     "aspectRatio": "9:16",
     "width": 1080,
     "height": 1920,
     "fps": 30,
-    "maxDurationSeconds": 18,
+    "maxDurationSeconds": 10,
     "voiceEnabled": false,
     "musicEnabled": false,
-    "subtitleEnabled": true
+    "subtitleEnabled": false
   },
   "scenes": [
     {
-      "id": "scene-001",
-      "durationSeconds": 6,
+      "id": "animated-scene-001",
+      "durationSeconds": 5,
+      "transition": {
+        "name": "fade",
+        "durationMs": 800
+      },
       "layers": [
         {
           "id": "bg-001",
           "type": "background",
           "source": {
             "kind": "color",
-            "value": "#f5f5f0"
+            "value": "#102a43"
           }
         },
         {
-          "id": "text-001",
+          "id": "text-hook",
           "type": "text",
-          "content": "Mo dau nhanh, ro y"
+          "content": "Motion should be measured frame by frame.",
+          "animation": [
+            {
+              "name": "fade",
+              "startMs": 0,
+              "durationMs": 1200,
+              "easing": "ease-out"
+            },
+            {
+              "name": "slide-up",
+              "startMs": 0,
+              "durationMs": 5000,
+              "easing": "ease-out"
+            }
+          ]
         }
       ]
     },
     {
-      "id": "scene-002",
-      "durationSeconds": 8,
+      "id": "animated-scene-002",
+      "durationSeconds": 5,
+      "transition": {
+        "name": "fade",
+        "durationMs": 800
+      },
       "layers": [
         {
           "id": "bg-002",
           "type": "background",
           "source": {
             "kind": "color",
-            "value": "#0f766e"
+            "value": "#f5f0d8"
           }
         },
         {
-          "id": "text-002",
+          "id": "text-shift",
           "type": "text",
-          "content": "Noi dung chinh duoc chia theo scene"
+          "content": "Time is injected. Frames are captured sequentially.",
+          "animation": {
+            "name": "slide-left",
+            "startMs": 0,
+            "durationMs": 5000,
+            "easing": "ease-out"
+          }
         }
       ]
     }

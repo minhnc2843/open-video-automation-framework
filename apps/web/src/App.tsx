@@ -19,7 +19,7 @@ export function App(): ReactElement {
         <header className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Open Video Automation Framework</p>
-            <h1 className="text-2xl font-semibold text-neutral-950">Web UI baseline</h1>
+            <h1 className="text-2xl font-semibold text-neutral-950">Render workspace</h1>
           </div>
           <StatusBanner error={workspace.state.error} statusMessage={workspace.state.statusMessage} />
         </header>
@@ -52,8 +52,8 @@ export function App(): ReactElement {
           <ScriptPanel
             busyAction={workspace.state.busyAction}
             latestVersion={workspace.state.latestVersion}
-            onQueueRenderJob={() => {
-              void workspace.actions.queueRenderJob();
+            onRenderVideo={() => {
+              void workspace.actions.renderVideo();
             }}
             onSaveVersion={() => {
               void workspace.actions.saveVersion();
@@ -70,9 +70,13 @@ export function App(): ReactElement {
           <div className="space-y-4">
             <ValidationPanel validation={workspace.state.validation} />
             <JobPanel
+              apiBaseUrl={workspace.state.apiBaseUrl}
               busyAction={workspace.state.busyAction}
               job={workspace.state.job}
               logs={workspace.state.logs}
+              onCancelJob={() => {
+                void workspace.actions.cancelJob();
+              }}
               onLoadLogs={() => {
                 void workspace.actions.loadLogs();
               }}

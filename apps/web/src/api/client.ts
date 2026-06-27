@@ -1,16 +1,17 @@
 import type {
   ApiResponse,
+  CancelRenderJobResponse,
+  CreateRenderJobFromScriptRequest,
+  CreateRenderJobFromScriptResponse,
   CreateProjectRequest,
   CreateProjectResponse,
   CreateProjectVersionRequest,
   CreateProjectVersionResponse,
-  CreateRenderJobRequest,
-  CreateRenderJobResponse,
   CreateWorkspaceRequest,
   CreateWorkspaceResponse,
   GetJobLogsResponse,
   GetProjectResponse,
-  GetRenderJobResponse,
+  RenderJobStatusResponse,
   ValidateScriptRequest,
   ValidateScriptResponse
 } from "@ovaf/contracts";
@@ -38,9 +39,14 @@ export interface ApiClient {
     request: CreateProjectVersionRequest
   ) => Promise<CreateProjectVersionResponse>;
   readonly validateScript: (request: ValidateScriptRequest) => Promise<ValidateScriptResponse>;
-  readonly createRenderJob: (request: CreateRenderJobRequest) => Promise<CreateRenderJobResponse>;
-  readonly getRenderJob: (jobId: string) => Promise<GetRenderJobResponse>;
+  readonly createRenderJob: (
+    projectId: string,
+    request: CreateRenderJobFromScriptRequest
+  ) => Promise<CreateRenderJobFromScriptResponse>;
+  readonly getRenderJobStatus: (jobId: string) => Promise<RenderJobStatusResponse>;
   readonly getJobLogs: (jobId: string) => Promise<GetJobLogsResponse>;
+  readonly cancelRenderJob: (jobId: string) => Promise<CancelRenderJobResponse>;
+  readonly getRenderJobOutputUrl: (jobId: string) => string;
 }
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
@@ -70,14 +76,17 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   }
 
   return {
+    cancelRenderJob: (jobId) => request("POST", `/api/render-jobs/${encodeURIComponent(jobId)}/cancel`),
     createProject: (projectRequest) => request("POST", "/projects", projectRequest),
     createProjectVersion: (projectId, versionRequest) =>
       request("POST", `/projects/${encodeURIComponent(projectId)}/versions`, versionRequest),
-    createRenderJob: (jobRequest) => request("POST", "/jobs", jobRequest),
+    createRenderJob: (projectId, jobRequest) =>
+      request("POST", `/api/projects/${encodeURIComponent(projectId)}/render-jobs`, jobRequest),
     createWorkspace: (workspaceRequest) => request("POST", "/workspaces", workspaceRequest),
-    getJobLogs: (jobId) => request("GET", `/jobs/${encodeURIComponent(jobId)}/logs`),
+    getJobLogs: (jobId) => request("GET", `/api/render-jobs/${encodeURIComponent(jobId)}/logs`),
     getProject: (projectId) => request("GET", `/projects/${encodeURIComponent(projectId)}`),
-    getRenderJob: (jobId) => request("GET", `/jobs/${encodeURIComponent(jobId)}`),
+    getRenderJobOutputUrl: (jobId) => toUrl(baseUrl, `/api/render-jobs/${encodeURIComponent(jobId)}/output`),
+    getRenderJobStatus: (jobId) => request("GET", `/api/render-jobs/${encodeURIComponent(jobId)}`),
     health: () => request("GET", "/health"),
     validateScript: (validationRequest) => request("POST", "/validation/script", validationRequest)
   };

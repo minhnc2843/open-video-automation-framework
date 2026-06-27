@@ -214,6 +214,58 @@ npm run render -- examples/basic-vertical-short.json
 
 CLI dùng Playwright-managed Chromium mặc định và tôn trọng `CHROMIUM_PATH` nếu bạn cần trỏ tới browser executable cụ thể. Phase này không gọi AI provider, không generate voice/music thật, và chỉ nối pipeline deterministic hiện có: validate JSON Script, build timeline, capture scene bằng Playwright, encode MP4 bằng FFmpeg, validate output bằng FFprobe.
 
+## Web UI Render Job to MP4
+
+Phase P2 nối Web UI với API render job thật. UI gửi JSON Script hiện tại lên API, API tạo project version + render job trong SQLite, worker in-process chạy renderer/encoder ở background, UI poll trạng thái job, rồi hiển thị preview/download MP4 khi job `completed`.
+
+Chuẩn bị một lần trên Windows PowerShell:
+
+```powershell
+cd D:\open-video-automation-framework
+npm install
+npm run typecheck
+npx playwright install chromium
+npm run db:migrate
+```
+
+Chạy API trong PowerShell thứ nhất:
+
+```powershell
+cd D:\open-video-automation-framework
+npm run dev --workspace @ovaf/api
+```
+
+API mặc định lắng nghe tại:
+
+```text
+http://127.0.0.1:3000
+```
+
+Chạy Web UI trong PowerShell thứ hai:
+
+```powershell
+cd D:\open-video-automation-framework
+npm run dev --workspace @ovaf/web
+```
+
+Vite thường mở UI tại:
+
+```text
+http://localhost:5173
+```
+
+Luồng sử dụng trong trình duyệt:
+
+1. Mở `http://localhost:5173`.
+2. Kiểm tra API base URL là `http://localhost:3000` hoặc đổi thành `http://127.0.0.1:3000`.
+3. Create hoặc open project.
+4. Validate JSON Script.
+5. Bấm `Render video`.
+6. UI poll `/api/render-jobs/:jobId`, hiển thị stage/progress/logs.
+7. Khi completed, UI phát MP4 bằng `<video controls>` và link `Tải MP4`.
+
+Output thật nằm ở `storage/output/<jobId>.mp4`; log JSONL nằm ở `storage/logs/<jobId>.jsonl`. Phase này chưa hỗ trợ kill process khi job đang active; queued job có thể cancel, active job trả cảnh báo rõ ràng. UI không import renderer và không chạy FFmpeg; render chỉ chạy phía API/worker.
+
 ## Đóng góp
 
 Trước khi đóng góp, đọc `specs/AI_RULES.md`, `specs/MASTER_SPEC.md` và tài liệu phase tương ứng. Không gửi PR thay đổi contract hoặc schema mà không kèm ADR.
