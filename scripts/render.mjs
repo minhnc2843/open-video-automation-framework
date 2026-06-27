@@ -26,8 +26,9 @@ async function main() {
   const [
     { validateJsonScript },
     { buildTimeline },
-    { captureScenePreview },
+    { captureSceneFrames },
     {
+      buildEncodeMp4Command,
       buildConcatScenesCommand,
       nodeProcessRunner,
       validateMp4Output,
@@ -135,17 +136,62 @@ async function main() {
   const sceneVideoPaths = [];
   for (const scene of timeline.scenes) {
     const sceneStartedAt = performance.now();
-    const sceneImagePath = path.join(jobTempDir, `${String(scene.index + 1).padStart(3, "0")}-${safeId(scene.id)}.png`);
+    const sceneFrameDirectory = path.join(jobTempDir, "frames", `${String(scene.index + 1).padStart(3, "0")}-${safeId(scene.id)}`);
     const sceneVideoPath = path.join(jobTempDir, `${String(scene.index + 1).padStart(3, "0")}-${safeId(scene.id)}.mp4`);
 
     await writeLog({
-      humanReadableMessage: "Scene capture started.",
+      humanReadableMessage: "Scene render started.",
       level: "info",
       sceneId: scene.id,
       stage: "scene_render",
-      status: "started"
+      status: "started",
+      technicalDetails: {
+        durationFrames: scene.durationFrames,
+        durationSeconds: scene.durationSeconds,
+        fps: timeline.settings.fps,
+        frameDirectory: sceneFrameDirectory
+      }
     });
-    await captureScenePreview(
+
+    const frameDirectoryExists = await pathExists(sceneFrameDirectory);
+    await writeLog({
+      humanReadableMessage: "Scene frame cache decision.",
+      level: "info",
+      sceneId: scene.id,
+      stage: "scene_render",
+      status: frameDirectoryExists ? "cache_bypass" : "cache_miss",
+      technicalDetails: {
+        frameDirectory: sceneFrameDirectory,
+        reason: "Frame directories are scoped to a render job and regenerated for deterministic output."
+      }
+    });
+
+    if (scene.transition?.name === "fade") {
+      await writeLog({
+        humanReadableMessage: "Fade transition uses scene-level fade-in and fade-out in the current concat pipeline.",
+        level: "warn",
+        sceneId: scene.id,
+        stage: "scene_render",
+        status: "capability_limit",
+        technicalDetails: {
+          limitation: "Overlapping crossfade between scene MP4 files is not implemented in this phase.",
+          transition: scene.transition
+        }
+      });
+    }
+
+    await writeLog({
+      humanReadableMessage: "Frame capture started.",
+      level: "info",
+      sceneId: scene.id,
+      stage: "frame_capture",
+      status: "started",
+      technicalDetails: {
+        frameDirectory: sceneFrameDirectory,
+        totalFrames: scene.durationFrames
+      }
+    });
+    const frameCapture = await captureSceneFrames(
       {
         fps: timeline.settings.fps,
         height: timeline.settings.height,
@@ -154,25 +200,53 @@ async function main() {
       },
       {
         executablePath: browserExecutablePath,
-        outputPath: sceneImagePath
+        outputDirectory: sceneFrameDirectory,
+        progressIntervalFrames: Math.max(1, timeline.settings.fps),
+        onProgress: async (progress) => {
+          await writeLog({
+            humanReadableMessage: "Frame capture progress.",
+            level: "info",
+            sceneId: scene.id,
+            stage: "frame_capture",
+            status: "progress",
+            technicalDetails: {
+              capturedFrames: progress.capturedFrames,
+              totalFrames: progress.totalFrames,
+              frameIndex: progress.frameIndex,
+              timeMs: Number(progress.timeMs.toFixed(3))
+            }
+          });
+        }
       }
     );
 
     await writeLog({
       durationMs: elapsedMs(sceneStartedAt),
-      humanReadableMessage: "Scene screenshot captured.",
+      humanReadableMessage: "Frame capture complete.",
       level: "info",
       sceneId: scene.id,
       stage: "frame_capture",
       status: "completed",
-      technicalDetails: { imagePath: sceneImagePath }
+      technicalDetails: {
+        firstFramePath: frameCapture.firstFramePath,
+        frameCount: frameCapture.frameCount,
+        frameDirectory: frameCapture.frameDirectory,
+        framePattern: frameCapture.framePattern,
+        lastFramePath: frameCapture.lastFramePath
+      }
     });
 
-    const encodeSceneCommand = buildStillImageSceneCommand({
+    const encodeSceneCommand = buildEncodeMp4Command({
       durationSeconds: scene.durationSeconds,
       fps: timeline.settings.fps,
-      imagePath: sceneImagePath,
-      outputPath: sceneVideoPath
+      height: timeline.settings.height,
+      outputPath: sceneVideoPath,
+      videoInput: {
+        kind: "image_sequence",
+        framePattern: frameCapture.framePattern,
+        fps: timeline.settings.fps
+      },
+      width: timeline.settings.width
     });
     await runFfmpegCommand(encodeSceneCommand, nodeProcessRunner, logger, {
       jobId,
@@ -263,6 +337,15 @@ function parseJson(value, inputPath) {
   }
 }
 
+async function pathExists(filePath) {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function resolveChromiumExecutablePath() {
   const configuredPath = process.env.CHROMIUM_PATH?.trim();
   if (configuredPath !== undefined && configuredPath.length > 0) {
@@ -284,35 +367,6 @@ async function resolveChromiumExecutablePath() {
     `Playwright Chromium executable was not found at ${executablePath}. Run npx playwright install chromium. On Colab, run npx playwright install-deps chromium first if system dependencies are missing.`
   );
   return executablePath;
-}
-
-function buildStillImageSceneCommand(input) {
-  return {
-    executablePath: process.env.FFMPEG_PATH ?? "ffmpeg",
-    args: [
-      "-y",
-      "-loop",
-      "1",
-      "-t",
-      formatSeconds(input.durationSeconds),
-      "-i",
-      input.imagePath,
-      "-vf",
-      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,fps=${input.fps},format=yuv420p`,
-      "-an",
-      "-c:v",
-      "libx264",
-      "-preset",
-      "veryfast",
-      "-crf",
-      "18",
-      "-pix_fmt",
-      "yuv420p",
-      "-movflags",
-      "+faststart",
-      input.outputPath
-    ]
-  };
 }
 
 async function runFfmpegCommand(command, runner, logger, context) {
@@ -364,10 +418,6 @@ async function runFfmpegCommand(command, runner, logger, context) {
 
 function safeId(value) {
   return value.replace(/[^a-z0-9_-]+/giu, "-").replace(/^-+|-+$/gu, "").toLowerCase() || "render";
-}
-
-function formatSeconds(value) {
-  return Number(value.toFixed(6)).toString();
 }
 
 function elapsedMs(startedAt) {

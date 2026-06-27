@@ -1,6 +1,5 @@
 import type { FrameworkErrorCode } from "./errors.js";
-import type { JsonObject } from "./persistence.js";
-import type { JsonScriptProject, JsonScriptSettings } from "./script.js";
+import type { JsonScriptProject, JsonScriptSettings, LayerAnimation, SceneTransition } from "./script.js";
 
 export interface TimelineLayer {
   readonly id: string;
@@ -12,7 +11,7 @@ export interface TimelineLayer {
     readonly value?: string;
     readonly path?: string;
   };
-  readonly animation?: JsonObject;
+  readonly animation?: LayerAnimation;
 }
 
 export interface TimelineCue {
@@ -32,6 +31,7 @@ export interface TimelineScene {
   readonly endFrameExclusive: number;
   readonly durationFrames: number;
   readonly layers: readonly TimelineLayer[];
+  readonly transition?: SceneTransition;
   readonly voiceCue?: TimelineCue;
   readonly subtitleCue?: TimelineCue;
 }

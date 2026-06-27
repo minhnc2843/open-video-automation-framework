@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Ajv, type ErrorObject } from "ajv";
-import type { FrameworkErrorCode, JsonObject, JsonScript, JsonScriptScene } from "@ovaf/contracts";
+import type { AnimationTiming, FrameworkErrorCode, JsonObject, JsonScript, JsonScriptLayer, JsonScriptScene } from "@ovaf/contracts";
 
 export interface JsonScriptValidationIssue {
   readonly code: FrameworkErrorCode;
@@ -139,7 +139,87 @@ function validateSceneRules(
     if (layer.source?.kind === "asset") {
       validateAssetReference(layer.source.path, layerPath, scene.id, options, issues);
     }
+
+    validateLayerAnimationTiming(layer, layerPath, scene, issues);
   }
+
+  validateSceneTransitionTiming(scene, scenePath, issues);
+}
+
+function validateLayerAnimationTiming(
+  layer: JsonScriptLayer,
+  layerPath: string,
+  scene: JsonScriptScene,
+  issues: JsonScriptValidationIssue[]
+): void {
+  const timings = toAnimationTimings(layer.animation);
+
+  for (const [animationIndex, animation] of timings.entries()) {
+    validateTimingWindow({
+      durationMs: animation.durationMs,
+      path:
+        Array.isArray(layer.animation) ? `${layerPath}/animation/${animationIndex}` : `${layerPath}/animation`,
+      scene,
+      startMs: animation.startMs,
+      subject: `Animation '${animation.name}' on layer '${layer.id}'`
+    }, issues);
+  }
+}
+
+function validateSceneTransitionTiming(
+  scene: JsonScriptScene,
+  scenePath: string,
+  issues: JsonScriptValidationIssue[]
+): void {
+  if (scene.transition === undefined) {
+    return;
+  }
+
+  validateTimingWindow({
+    durationMs: scene.transition.durationMs,
+    path: `${scenePath}/transition`,
+    scene,
+    startMs: 0,
+    subject: `Scene transition '${scene.transition.name}'`
+  }, issues);
+}
+
+function validateTimingWindow(
+  input: {
+    readonly durationMs: number;
+    readonly path: string;
+    readonly scene: JsonScriptScene;
+    readonly startMs: number;
+    readonly subject: string;
+  },
+  issues: JsonScriptValidationIssue[]
+): void {
+  const sceneDurationMs = input.scene.durationSeconds * 1000;
+  const endMs = input.startMs + input.durationMs;
+
+  if (endMs <= sceneDurationMs + 0.000001) {
+    return;
+  }
+
+  issues.push({
+    code: "SCRIPT-SEMANTIC-005",
+    path: input.path,
+    sceneId: input.scene.id,
+    humanReadableMessage: "Animation or transition timing exceeds the scene duration.",
+    technicalDetails: `${input.subject} ends at ${endMs}ms, but scene ${input.scene.id} is ${sceneDurationMs}ms.`
+  });
+}
+
+function toAnimationTimings(animation: JsonScriptLayer["animation"]): readonly AnimationTiming[] {
+  if (animation === undefined) {
+    return [];
+  }
+
+  return isAnimationTimingArray(animation) ? animation : [animation];
+}
+
+function isAnimationTimingArray(animation: NonNullable<JsonScriptLayer["animation"]>): animation is readonly AnimationTiming[] {
+  return Array.isArray(animation);
 }
 
 function validateAssetReference(

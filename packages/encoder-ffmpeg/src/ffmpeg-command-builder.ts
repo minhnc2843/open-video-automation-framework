@@ -1,7 +1,6 @@
 import type { AudioTrackInput, ConcatScenesInput, EncodeMp4Input, FfmpegCommand } from "@ovaf/contracts";
 
 const DEFAULT_FFMPEG_PATH = "ffmpeg";
-const VIDEO_FILTER = "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,fps={fps},format=yuv420p";
 
 export function buildEncodeMp4Command(input: EncodeMp4Input): FfmpegCommand {
   validateAudioTracks(input.audioTracks ?? [], input.durationSeconds);
@@ -9,7 +8,7 @@ export function buildEncodeMp4Command(input: EncodeMp4Input): FfmpegCommand {
   const args: string[] = ["-y"];
 
   if (input.videoInput.kind === "image_sequence") {
-    args.push("-framerate", String(input.videoInput.fps), "-i", input.videoInput.framePattern);
+    args.push("-framerate", String(input.videoInput.fps), "-start_number", "0", "-i", input.videoInput.framePattern);
   } else {
     args.push("-i", input.videoInput.inputPath);
   }
@@ -25,7 +24,7 @@ export function buildEncodeMp4Command(input: EncodeMp4Input): FfmpegCommand {
   addAudioArgs(args, input.audioTracks ?? []);
   args.push(
     "-vf",
-    VIDEO_FILTER.replace("{fps}", String(input.fps)),
+    buildVideoFilter(input.width, input.height, input.fps),
     "-t",
     formatSeconds(input.durationSeconds),
     "-c:v",
@@ -45,6 +44,10 @@ export function buildEncodeMp4Command(input: EncodeMp4Input): FfmpegCommand {
     executablePath: input.ffmpegPath ?? DEFAULT_FFMPEG_PATH,
     args
   };
+}
+
+function buildVideoFilter(width: number, height: number, fps: number): string {
+  return `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,fps=${fps},format=yuv420p`;
 }
 
 export function buildConcatScenesCommand(input: ConcatScenesInput): FfmpegCommand {

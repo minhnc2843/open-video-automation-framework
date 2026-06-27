@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { HtmlSceneRenderInput, TimelineScene } from "@ovaf/contracts";
 import { buildHtmlSceneDocument } from "./scene-document.js";
 import { writeScenePreviewDocument } from "./scene-preview.js";
-import { captureScenePreview, type ChromiumLauncherPort } from "./playwright-capture.js";
+import { captureSceneFrames, captureScenePreview, type ChromiumLauncherPort } from "./playwright-capture.js";
 import { renderSceneWithCache } from "./scene-cache-renderer.js";
 
 let tempRoot: string;
@@ -71,6 +71,43 @@ describe("buildHtmlSceneDocument", () => {
     expect(html).toContain("z-index:0");
     expect(html).toContain("z-index:1");
   });
+
+  it("renders deterministic animation state for a requested time", () => {
+    const html = buildHtmlSceneDocument({
+      ...input,
+      timeMs: 500,
+      scene: {
+        ...input.scene,
+        transition: {
+          name: "fade",
+          durationMs: 1000
+        },
+        layers: [
+          input.scene.layers[0]!,
+          {
+            ...input.scene.layers[1]!,
+            animation: [
+              {
+                name: "fade",
+                startMs: 0,
+                durationMs: 1000
+              },
+              {
+                name: "slide-up",
+                startMs: 0,
+                durationMs: 1000
+              }
+            ]
+          }
+        ]
+      }
+    });
+
+    expect(html.html).toContain('data-time-ms="500"');
+    expect(html.html).toContain("value: 500");
+    expect(html.html).toContain("opacity: 0.5");
+    expect(html.html).toContain("opacity:0.5;transform:translateY(80px)");
+  });
 });
 
 describe("writeScenePreviewDocument", () => {
@@ -125,6 +162,74 @@ describe("captureScenePreview", () => {
       "context.close",
       "browser.close"
     ]);
+  });
+});
+
+describe("captureSceneFrames", () => {
+  it("captures sequential deterministic frames with an injected launcher", async () => {
+    const calls: string[] = [];
+    const progressCalls: string[] = [];
+    const shortInput: HtmlSceneRenderInput = {
+      ...input,
+      scene: {
+        ...input.scene,
+        durationFrames: 3,
+        endFrameExclusive: 3
+      }
+    };
+    const launcher: ChromiumLauncherPort = {
+      launch: async () => ({
+        newContext: async () => ({
+          newPage: async () => ({
+            setViewportSize: async (size) => {
+              calls.push(`viewport:${size.width}x${size.height}`);
+            },
+            setContent: async (html) => {
+              const timeMatch = /data-time-ms="([^"]+)"/u.exec(html);
+              calls.push(`html:${timeMatch?.[1] ?? "missing"}`);
+            },
+            screenshot: async (options) => {
+              calls.push(`screenshot:${path.basename(options.path)}`);
+              writeFileSync(options.path, "fake-image", "utf8");
+              return Buffer.from("fake-image");
+            }
+          }),
+          close: async () => {
+            calls.push("context.close");
+          }
+        }),
+        close: async () => {
+          calls.push("browser.close");
+        }
+      })
+    };
+    const outputDirectory = path.join(tempRoot, "frames");
+
+    const result = await captureSceneFrames(shortInput, {
+      outputDirectory,
+      launcher,
+      progressIntervalFrames: 2,
+      onProgress: async (progress) => {
+        progressCalls.push(`${progress.capturedFrames}/${progress.totalFrames}:${path.basename(progress.outputPath)}`);
+      }
+    });
+
+    expect(result.frameCount).toBe(3);
+    expect(result.framePattern).toBe(path.join(outputDirectory, "%06d.png"));
+    expect(existsSync(path.join(outputDirectory, "000000.png"))).toBe(true);
+    expect(existsSync(path.join(outputDirectory, "000002.png"))).toBe(true);
+    expect(calls).toEqual([
+      "viewport:1080x1920",
+      "html:0",
+      "screenshot:000000.png",
+      "html:33.333333",
+      "screenshot:000001.png",
+      "html:66.666667",
+      "screenshot:000002.png",
+      "context.close",
+      "browser.close"
+    ]);
+    expect(progressCalls).toEqual(["1/3:000000.png", "2/3:000001.png", "3/3:000002.png"]);
   });
 });
 

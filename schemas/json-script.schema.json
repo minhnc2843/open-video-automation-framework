@@ -102,6 +102,9 @@
             "$ref": "#/$defs/layer"
           }
         },
+        "transition": {
+          "$ref": "#/$defs/sceneTransition"
+        },
         "voice": {
           "type": "object",
           "additionalProperties": false,
@@ -135,8 +138,18 @@
           "$ref": "#/$defs/source"
         },
         "animation": {
-          "type": "object",
-          "additionalProperties": true
+          "oneOf": [
+            {
+              "$ref": "#/$defs/animationTiming"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/animationTiming"
+              }
+            }
+          ]
         }
       },
       "allOf": [
@@ -210,6 +223,44 @@
           }
         }
       ]
+    },
+    "animationTiming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "startMs", "durationMs"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["fade", "slide-up", "slide-left", "zoom-in", "zoom-out"]
+        },
+        "startMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "durationMs": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "easing": {
+          "type": "string",
+          "enum": ["linear", "ease-in", "ease-out", "ease-in-out"]
+        }
+      }
+    },
+    "sceneTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "durationMs"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "fade"
+        },
+        "durationMs": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
     }
   }
 }

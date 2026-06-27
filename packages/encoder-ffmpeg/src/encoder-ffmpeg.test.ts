@@ -34,7 +34,10 @@ describe("buildEncodeMp4Command", () => {
 
     expect(command.executablePath).toBe("ffmpeg");
     expect(command.args).toContain("-framerate");
+    expect(command.args).toContain("-start_number");
+    expect(command.args).toContain("0");
     expect(command.args).toContain("frames/%06d.png");
+    expect(command.args).not.toContain("-loop");
     expect(command.args).toContain("-an");
     expect(command.args).toContain("scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p");
     expect(command.args).toContain("libx264");

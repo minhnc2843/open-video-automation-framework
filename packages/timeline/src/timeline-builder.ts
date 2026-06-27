@@ -123,6 +123,7 @@ function buildScenes(script: JsonScript): readonly TimelineScene[] {
       endFrameExclusive,
       durationFrames,
       layers: scene.layers.map(mapLayer),
+      ...(scene.transition === undefined ? {} : { transition: scene.transition }),
       ...(voiceCue === undefined ? {} : { voiceCue }),
       ...(subtitleCue === undefined ? {} : { subtitleCue })
     };

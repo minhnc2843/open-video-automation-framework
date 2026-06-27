@@ -23,4 +23,5 @@ export interface HtmlSceneRenderInput {
   readonly width: 1080;
   readonly height: 1920;
   readonly fps: number;
+  readonly timeMs?: number;
 }

@@ -25,6 +25,7 @@ DOMAIN-AREA-NNN
 | `SCRIPT-SEMANTIC-002` | validation | error | Voice is enabled but scene voice text is missing. |
 | `SCRIPT-SEMANTIC-003` | validation | error | Subtitle is enabled but no subtitle text can be derived. |
 | `SCRIPT-SEMANTIC-004` | validation | error | Layer ids are not unique within a scene. |
+| `SCRIPT-SEMANTIC-005` | validation | error | Animation or scene transition timing is outside the scene duration. |
 | `SCRIPT-ASSET-001` | validation | error | Referenced asset does not exist in the provided asset set. |
 | `TIMELINE-TIME-001` | validation | error | Timeline scenes overlap. |
 | `TIMELINE-TIME-002` | validation | error | Timeline scene or total duration overflows configured duration. |

@@ -19,7 +19,8 @@ export async function renderSceneWithCache(
     renderSettings: {
       width: input.width,
       height: input.height,
-      fps: input.fps
+      fps: input.fps,
+      ...(input.timeMs === undefined ? {} : { timeMs: input.timeMs })
     },
     generatorVersion: options.generatorVersion,
     ...(options.assetFingerprints === undefined ? {} : { assetFingerprints: options.assetFingerprints })

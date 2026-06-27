@@ -34,9 +34,18 @@ const script: JsonScript = {
         {
           id: "text-001",
           type: "text",
-          content: "First"
+          content: "First",
+          animation: {
+            name: "fade",
+            startMs: 0,
+            durationMs: 1000
+          }
         }
       ],
+      transition: {
+        name: "fade",
+        durationMs: 500
+      },
       voice: {
         text: "First voice"
       }
@@ -103,6 +112,15 @@ describe("buildTimeline", () => {
       ["bg-001", 0],
       ["text-001", 1]
     ]);
+    expect(result.timeline.scenes[0]?.layers[1]?.animation).toEqual({
+      name: "fade",
+      startMs: 0,
+      durationMs: 1000
+    });
+    expect(result.timeline.scenes[0]?.transition).toEqual({
+      name: "fade",
+      durationMs: 500
+    });
   });
 
   it("derives voice and subtitle cues per scene", () => {

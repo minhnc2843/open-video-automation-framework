@@ -50,6 +50,42 @@ describe("validateJsonScript", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts layer animation and scene fade transition timing", () => {
+    const result = validateJsonScript({
+      ...validScript,
+      scenes: [
+        {
+          ...validScript.scenes[0],
+          transition: {
+            name: "fade",
+            durationMs: 750
+          },
+          layers: [
+            validScript.scenes[0].layers[0],
+            {
+              ...validScript.scenes[0].layers[1],
+              animation: [
+                {
+                  name: "fade",
+                  startMs: 0,
+                  durationMs: 1000,
+                  easing: "ease-out"
+                },
+                {
+                  name: "slide-up",
+                  startMs: 250,
+                  durationMs: 2000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects schema violations with a JSON path", () => {
     const result = validateJsonScript({
       ...validScript,
@@ -171,6 +207,38 @@ describe("validateJsonScript", () => {
         expect.objectContaining({
           code: "SCRIPT-SEMANTIC-004",
           path: "/scenes/0/layers/1/id"
+        })
+      );
+    }
+  });
+
+  it("rejects animation timing that exceeds its scene duration", () => {
+    const result = validateJsonScript({
+      ...validScript,
+      scenes: [
+        {
+          ...validScript.scenes[0],
+          layers: [
+            validScript.scenes[0].layers[0],
+            {
+              ...validScript.scenes[0].layers[1],
+              animation: {
+                name: "zoom-in",
+                startMs: 4500,
+                durationMs: 1000
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues).toContainEqual(
+        expect.objectContaining({
+          code: "SCRIPT-SEMANTIC-005",
+          path: "/scenes/0/layers/1/animation"
         })
       );
     }

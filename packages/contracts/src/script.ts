@@ -1,5 +1,21 @@
-import type { JsonObject } from "./persistence.js";
 import type { ProjectLanguage } from "./runtime.js";
+
+export type AnimationName = "fade" | "slide-up" | "slide-left" | "zoom-in" | "zoom-out";
+export type AnimationEasing = "linear" | "ease-in" | "ease-out" | "ease-in-out";
+
+export interface AnimationTiming {
+  readonly name: AnimationName;
+  readonly startMs: number;
+  readonly durationMs: number;
+  readonly easing?: AnimationEasing;
+}
+
+export type LayerAnimation = AnimationTiming | readonly AnimationTiming[];
+
+export interface SceneTransition {
+  readonly name: "fade";
+  readonly durationMs: number;
+}
 
 export interface JsonScriptProject {
   readonly name: string;
@@ -28,13 +44,14 @@ export interface JsonScriptLayer {
   readonly type: "background" | "text" | "image" | "video";
   readonly content?: string;
   readonly source?: JsonScriptSource;
-  readonly animation?: JsonObject;
+  readonly animation?: LayerAnimation;
 }
 
 export interface JsonScriptScene {
   readonly id: string;
   readonly durationSeconds: number;
   readonly layers: readonly JsonScriptLayer[];
+  readonly transition?: SceneTransition;
   readonly voice?: {
     readonly text: string;
   };
